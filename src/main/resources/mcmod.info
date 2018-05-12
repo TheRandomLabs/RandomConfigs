@@ -1,0 +1,16 @@
+[
+	{
+		"modid": "randomconfigs",
+		"name": "RandomConfigs",
+		"description": "",
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+		"url": "https://minecraft.curseforge.com/projects/randomconfigs",
+		"updateUrl": "https://raw.githubusercontent.com/TheRandomLabs/RandomConfigs/misc/versions.json",
+		"authorList": ["TheRandomLabs"],
+		"credits": "",
+		"logoFile": "assets/randomconfigs/textures/logo.png",
+		"screenshots": [],
+		"dependencies": []
+	}
+]
