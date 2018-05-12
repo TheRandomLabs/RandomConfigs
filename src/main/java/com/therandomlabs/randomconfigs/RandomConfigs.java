@@ -1,5 +1,6 @@
 package com.therandomlabs.randomconfigs;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -62,10 +63,14 @@ public final class RandomConfigs {
 	}
 
 	public static <T> T readJson(String jsonName, Class<T> clazz) throws IOException {
-		final Path path = getConfig(jsonName + ".json");
-		final String raw = StringUtils.join(Files.readAllLines(path), System.lineSeparator());
+		try {
+			final Path path = getConfig(jsonName + ".json");
+			final String raw = StringUtils.join(Files.readAllLines(path), System.lineSeparator());
 
-		return new Gson().fromJson(raw, clazz);
+			return new Gson().fromJson(raw, clazz);
+		} catch(FileNotFoundException ex) {
+			return null;
+		}
 	}
 
 	public static void writeJson(String jsonName, Object object) throws IOException {

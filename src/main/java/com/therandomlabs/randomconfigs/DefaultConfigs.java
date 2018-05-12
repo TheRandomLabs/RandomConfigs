@@ -28,6 +28,10 @@ public final class DefaultConfigs {
 	public static void handle() throws IOException {
 		final Config[] configs = RandomConfigs.readJson("defaultconfigs", Config[].class);
 
+		if(configs == null) {
+			return;
+		}
+
 		for(Config config : configs) {
 			handle(config);
 		}
@@ -44,7 +48,7 @@ public final class DefaultConfigs {
 			return;
 		}
 
-		final Path source = RandomConfigs.getConfig(config.source);
+		final Path source = RandomConfigs.getConfig("defaultconfigs/" + config.source);
 		final Path destination = RandomConfigs.getFile(config.destination);
 
 		if(config.forceCopy || !Files.exists(destination)) {
