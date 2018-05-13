@@ -65,6 +65,7 @@ public final class DefaultConfigs {
 		final Path destination = RandomConfigs.getFile(config.destination);
 
 		if(config.forceCopy || !Files.exists(destination)) {
+			Files.createDirectories(destination.getParent());
 			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}
 

@@ -83,11 +83,10 @@ public final class RandomConfigs {
 		if(clientSide == null) {
 			try {
 				Class.forName("net.minecraft.client.gui.GuiScreen");
+				clientSide = true;
 			} catch(ClassNotFoundException ex) {
 				clientSide = false;
 			}
-
-			clientSide = true;
 		}
 
 		return clientSide;
