@@ -29,6 +29,7 @@ public final class DefaultConfigs {
 		final Config[] configs = RandomConfigs.readJson("defaultconfigs", Config[].class);
 
 		if(configs == null) {
+			Files.createDirectories(RandomConfigs.getConfig("defaultconfigs"));
 			return;
 		}
 
@@ -40,6 +41,18 @@ public final class DefaultConfigs {
 	}
 
 	public static void handle(Config config) throws IOException {
+		if(config.source == null) {
+			throw new NullPointerException("source");
+		}
+
+		if(config.destination == null) {
+			throw new NullPointerException("destination");
+		}
+
+		if(config.side == null) {
+			throw new NullPointerException("side");
+		}
+
 		if(config.side == Side.CLIENT && !RandomConfigs.isClientSide()) {
 			return;
 		}

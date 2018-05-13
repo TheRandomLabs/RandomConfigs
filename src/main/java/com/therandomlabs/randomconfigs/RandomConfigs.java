@@ -28,8 +28,6 @@ public final class RandomConfigs {
 			"https://raw.githubusercontent.com/TheRandomLabs/RandomConfigs/misc/versions.json";
 	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
 
-	public static final Logger LOGGER = LogManager.getLogger(MODID);
-
 	public static final Path MC_DIR = Paths.get(".").toAbsolutePath();
 	public static final Path CONFIG_DIR = Paths.get("config", MODID);
 
