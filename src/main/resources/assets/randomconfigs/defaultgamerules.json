@@ -1,0 +1,39 @@
+{
+	/*
+	//Top-level gamerules are set for all game modes and world types.
+	"commandBlockOutput": {
+		//Each gamerule has two properties: the value, and whether the value should be forced.
+		//If "forced" is set to true, RandomConfigs will make sure that gamerule is not changed.
+		"value": false,
+		"forced": false
+	},
+	"keepInventory": {
+		"value": true,
+		"forced": false
+	},
+	"MODE_OR_WORLD_TYPE_SPECIFIC": {
+		//Gamerules can be set for specific game modes and world types in the format:
+		//MODE,MODE,...:TYPE,TYPE,...
+		"creative:flat,void": {
+			"doDaylightCycle": {
+				"value": false,
+				"forced": true
+			},
+			"doWeatherCycle": {
+				"value": false,
+				"forced": true
+			},
+			"doMobSpawning": {
+				"value": false,
+				"forced": false
+			}
+		},
+		//The game mode or world type can be empty. For an empty world type, use:
+		//:TYPE,TYPE,...
+		"survival": {
+			//This is used to set the world border size in blocks from (0, 0).
+			"WORLD_BORDER_SIZE": 10000
+		}
+	}
+	*/
+}
