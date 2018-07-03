@@ -1,10 +1,10 @@
 package com.therandomlabs.randomconfigs;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -93,7 +93,7 @@ public final class RandomConfigs {
 		try {
 			return StringUtils.join(Files.readAllLines(path), System.lineSeparator());
 		} catch(IOException ex) {
-			if(!(ex instanceof FileNotFoundException)) {
+			if(!(ex instanceof NoSuchFileException)) {
 				handleException("Failed to read file: " + path, ex);
 			}
 		}
