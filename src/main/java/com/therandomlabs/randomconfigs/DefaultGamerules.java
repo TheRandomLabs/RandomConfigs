@@ -25,27 +25,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod.EventBusSubscriber(modid = RandomConfigs.MODID)
 public final class DefaultGamerules {
-	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
-	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
-	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
-	public static final List<String> DEFAULT;
-
-	static {
-		final ResourceLocation location =
-				new ResourceLocation(RandomConfigs.MODID, "defaultgamerules.json");
-
-		List<String> lines = null;
-
-		try {
-			final IResourceManager resourceManager = Minecraft.getMinecraft().getResourceManager();
-			lines = RandomConfigs.readLines(resourceManager.getResource(location).getInputStream());
-		} catch(IOException ex) {
-			RandomConfigs.handleException("Failed to read: " + location, ex);
-		}
-
-		DEFAULT = lines;
-	}
-
 	public static class DefaultGamerule {
 		public String key;
 		public String value;
@@ -74,7 +53,28 @@ public final class DefaultGamerules {
 		}
 	}
 
+	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
+	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
+	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
+	public static final List<String> DEFAULT;
+
 	private static List<DefaultGamerule> cachedDefaultGamerules;
+
+	static {
+		final ResourceLocation location =
+				new ResourceLocation(RandomConfigs.MODID, "defaultgamerules.json");
+
+		List<String> lines = null;
+
+		try {
+			final IResourceManager resourceManager = Minecraft.getMinecraft().getResourceManager();
+			lines = RandomConfigs.readLines(resourceManager.getResource(location).getInputStream());
+		} catch(IOException ex) {
+			RandomConfigs.handleException("Failed to read: " + location, ex);
+		}
+
+		DEFAULT = lines;
+	}
 
 	@SubscribeEvent
 	public static void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
