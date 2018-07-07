@@ -12,9 +12,6 @@ import java.util.Set;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
@@ -56,25 +53,11 @@ public final class DefaultGamerules {
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
 	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
-	public static final List<String> DEFAULT;
+	public static final List<String> DEFAULT = RandomConfigs.readLines(
+			DefaultGamerules.class.getResourceAsStream("/assets/randomconfigs/defaultgamerules.json")
+	);
 
 	private static List<DefaultGamerule> cachedDefaultGamerules;
-
-	static {
-		final ResourceLocation location =
-				new ResourceLocation(RandomConfigs.MODID, "defaultgamerules.json");
-
-		List<String> lines = null;
-
-		try {
-			final IResourceManager resourceManager = Minecraft.getMinecraft().getResourceManager();
-			lines = RandomConfigs.readLines(resourceManager.getResource(location).getInputStream());
-		} catch(IOException ex) {
-			RandomConfigs.handleException("Failed to read: " + location, ex);
-		}
-
-		DEFAULT = lines;
-	}
 
 	@SubscribeEvent
 	public static void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
