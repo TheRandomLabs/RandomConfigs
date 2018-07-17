@@ -7,9 +7,11 @@
 		"mcversion": "${mcversion}",
 		"url": "https://minecraft.curseforge.com/projects/randomconfigs",
 		"updateUrl": "https://raw.githubusercontent.com/TheRandomLabs/RandomConfigs/misc/versions.json",
-		"authorList": ["TheRandomLabs"],
+		"authorList": [
+			"TheRandomLabs"
+		],
 		"credits": "",
-		"logoFile": "assets/randomconfigs/textures/logo.png",
+		"logoFile": "assets/randomconfigs/logo.png",
 		"screenshots": [],
 		"dependencies": []
 	}

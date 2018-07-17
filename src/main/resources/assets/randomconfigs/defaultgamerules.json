@@ -28,8 +28,9 @@
 				"forced": false
 			}
 		},
-		//The game mode or world type can be empty. For an empty world type, use:
+		//The game mode or world type can be empty. For an empty game mode, use:
 		//:TYPE,TYPE,...
+		//For example, use ":void" to specify gamerules for all Void worlds.
 		"survival": {
 			//This is used to set the world border size in blocks from (0, 0).
 			"WORLD_BORDER_SIZE": 10000
