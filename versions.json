@@ -1,6 +1,7 @@
 {
 	"homepage": "https://minecraft.curseforge.com/projects/randomconfigs",
 	"1.12.2": {
+		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
 		"1.12.2-1.1.0.2": "Fixed a server crash.",
 		"1.12.2-1.1.0.1": "Hotfix.",
 		"1.12.2-1.1.0.0": "Added default config versions.\nAdded default gamerules.",
@@ -8,6 +9,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.12.1": {
+		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
 		"1.12.2-1.1.0.2": "Fixed a server crash.",
 		"1.12.2-1.1.0.1": "Hotfix.",
 		"1.12.2-1.1.0.0": "Added default config versions.\nAdded default gamerules.",
@@ -15,6 +17,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.12": {
+		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
 		"1.12.2-1.1.0.2": "Fixed a server crash.",
 		"1.12.2-1.1.0.1": "Hotfix.",
 		"1.12.2-1.1.0.0": "Added default config versions.\nAdded default gamerules.",
@@ -22,6 +25,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.11.2": {
+		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
 		"1.12.2-1.1.0.2": "Fixed a server crash.",
 		"1.12.2-1.1.0.1": "Hotfix.",
 		"1.12.2-1.1.0.0": "Added default config versions.\nAdded default gamerules.",
@@ -29,6 +33,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.11": {
+		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
 		"1.12.2-1.1.0.2": "Fixed a server crash.",
 		"1.12.2-1.1.0.1": "Hotfix.",
 		"1.12.2-1.1.0.0": "Added default config versions.\nAdded default gamerules.",
@@ -36,6 +41,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.10.2": {
+		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
 		"1.12.2-1.1.0.2": "Fixed a server crash.",
 		"1.12.2-1.1.0.1": "Hotfix.",
 		"1.12.2-1.1.0.0": "Added default config versions.\nAdded default gamerules.",
@@ -43,6 +49,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.10": {
+		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
 		"1.12.2-1.1.0.2": "Fixed a server crash.",
 		"1.12.2-1.1.0.1": "Hotfix.",
 		"1.12.2-1.1.0.0": "Added default config versions.\nAdded default gamerules.",
@@ -50,15 +57,15 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"promos": {
-		"1.12.2-latest": "1.12.2-1.1.0.2",
-		"1.12.2-recommended": "1.12.2-1.1.0.2",
-		"1.12.1-latest": "1.12.2-1.1.0.2",
-		"1.12.1-recommended": "1.12.2-1.1.0.2",
-		"1.12-latest": "1.12.2-1.1.0.2",
-		"1.12-recommended": "1.12.2-1.1.0.2",
-		"1.11.2-latest": "1.12.2-1.1.0.2",
-		"1.11-recommended": "1.12.2-1.1.0.2",
-		"1.10.2-latest": "1.12.2-1.1.0.2",
-		"1.10-recommended": "1.12.2-1.1.0.2"
+		"1.12.2-latest": "1.12.2-1.1.0.3",
+		"1.12.2-recommended": "1.12.2-1.1.0.3",
+		"1.12.1-latest": "1.12.2-1.1.0.3",
+		"1.12.1-recommended": "1.12.2-1.1.0.3",
+		"1.12-latest": "1.12.2-1.1.0.3",
+		"1.12-recommended": "1.12.2-1.1.0.3",
+		"1.11.2-latest": "1.12.2-1.1.0.3",
+		"1.11-recommended": "1.12.2-1.1.0.3",
+		"1.10.2-latest": "1.12.2-1.1.0.3",
+		"1.10-recommended": "1.12.2-1.1.0.3"
 	}
 }
