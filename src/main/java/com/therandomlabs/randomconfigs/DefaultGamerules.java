@@ -124,9 +124,8 @@ public final class DefaultGamerules {
 			if(!rule.key.equals(WORLD_BORDER_SIZE)) {
 				if(rule.forced) {
 					forced.add(rule.key);
-				}
-
-				if(!worldInfo.gameRules.hasRule(rule.key)) {
+					worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+				} else if(!worldInfo.gameRules.hasRule(rule.key)) {
 					worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
 				}
 			}
