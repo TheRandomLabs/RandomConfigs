@@ -54,7 +54,9 @@ public final class DefaultGamerules {
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
 	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
 	public static final List<String> DEFAULT = RandomConfigs.readLines(
-			DefaultGamerules.class.getResourceAsStream("/assets/randomconfigs/defaultgamerules.json")
+			DefaultGamerules.class.getResourceAsStream(
+					"/assets/randomconfigs/defaultgamerules.json"
+			)
 	);
 
 	private static List<DefaultGamerule> cachedDefaultGamerules;
@@ -103,7 +105,7 @@ public final class DefaultGamerules {
 			defaultGamerules = cachedDefaultGamerules;
 			cachedDefaultGamerules = null;
 		} else {
-			final int gamemode = world.getWorldInfo().getGameType().getID();
+			final int gamemode = world.worldInfo.getGameType().getID();
 			final String type = world.getWorldType().getName();
 
 			try {
@@ -117,7 +119,13 @@ public final class DefaultGamerules {
 
 		for(DefaultGamerule rule : defaultGamerules) {
 			if(!rule.key.equals(WORLD_BORDER_SIZE)) {
-				forced.add(rule.key);
+				if(rule.forced) {
+					forced.add(rule.key);
+				}
+
+				if(!world.worldInfo.gameRules.hasRule(rule.key)) {
+					world.worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+				}
 			}
 		}
 

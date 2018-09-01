@@ -20,7 +20,6 @@ import net.minecraft.util.ReportedException;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.commons.lang3.StringUtils;
 
 @Mod(modid = RandomConfigs.MODID, version = RandomConfigs.VERSION,
@@ -52,10 +51,7 @@ public final class RandomConfigs {
 		} catch(IOException ex) {
 			handleException("Failed to handle default configs", ex);
 		}
-	}
 
-	@Mod.EventHandler
-	public static void preInit(FMLPreInitializationEvent event) {
 		try {
 			DefaultGamerules.ensureExists();
 		} catch(IOException ex) {
