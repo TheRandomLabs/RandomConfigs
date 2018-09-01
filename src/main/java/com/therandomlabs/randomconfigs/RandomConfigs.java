@@ -2,6 +2,8 @@ package com.therandomlabs.randomconfigs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -16,28 +18,18 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.util.ReportedException;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.crash.ReportedException;
 import org.apache.commons.lang3.StringUtils;
+import org.dimdev.riftloader.RiftLoader;
+import org.dimdev.riftloader.Side;
+import org.dimdev.riftloader.listener.InitializationListener;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.Mixins;
 
-@Mod(modid = RandomConfigs.MODID, version = RandomConfigs.VERSION,
-		acceptedMinecraftVersions = RandomConfigs.ACCEPTED_MINECRAFT_VERSIONS,
-		acceptableRemoteVersions = RandomConfigs.ACCEPTABLE_REMOTE_VERSIONS,
-		updateJSON = RandomConfigs.UPDATE_JSON,
-		certificateFingerprint = RandomConfigs.CERTIFICATE_FINGERPRINT)
-public final class RandomConfigs {
+public final class RandomConfigs implements InitializationListener {
 	public static final String MODID = "randomconfigs";
-	public static final String VERSION = "@VERSION@";
-	public static final String ACCEPTED_MINECRAFT_VERSIONS = "[1.10,1.14)";
-	public static final String ACCEPTABLE_REMOTE_VERSIONS = "*";
-	public static final String UPDATE_JSON =
-			"https://raw.githubusercontent.com/TheRandomLabs/RandomConfigs/misc/versions.json";
-	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
 
-	public static final boolean IS_CLIENT = FMLCommonHandler.instance().getSide().isClient();
+	public static final boolean IS_CLIENT = RiftLoader.instance.getSide() == Side.CLIENT;
 
 	public static final Path MC_DIR = Paths.get(".").toAbsolutePath().normalize();
 	public static final Path CONFIG_DIR = MC_DIR.resolve("config").resolve(MODID);
@@ -45,17 +37,19 @@ public final class RandomConfigs {
 	public static final String NEWLINE_REGEX = "(\r\n|\r|\n)";
 	public static final Pattern NEWLINE = Pattern.compile(NEWLINE_REGEX);
 
-	@Mod.EventHandler
-	public static void construct(FMLConstructionEvent event) {
+	private static Field modifiers;
+
+	@Override
+	public void onInitialization() {
+		MixinBootstrap.init();
+		Mixins.addConfiguration("mixins." + MODID + ".json");
+
 		try {
 			DefaultConfigs.handle();
 		} catch(IOException ex) {
 			handleException("Failed to handle default configs", ex);
 		}
-	}
 
-	@Mod.EventHandler
-	public static void preInit(FMLPreInitializationEvent event) {
 		try {
 			DefaultGamerules.ensureExists();
 		} catch(IOException ex) {
@@ -150,5 +144,31 @@ public final class RandomConfigs {
 
 	public static void handleException(String message, Exception ex) {
 		throw new ReportedException(new CrashReport(message, ex));
+	}
+
+	public static Field findField(Class<?> clazz, String name, String obfName) {
+		for(Field field : clazz.getDeclaredFields()) {
+			if(name.equals(field.getName()) || obfName.equals(field.getName())) {
+				field.setAccessible(true);
+				return field;
+			}
+		}
+
+		return null;
+	}
+
+	public static Field removeFinalModifier(Field field) {
+		try {
+			if(modifiers == null) {
+				modifiers = Field.class.getDeclaredField("modifiers");
+				modifiers.setAccessible(true);
+			}
+
+			modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+		} catch(Exception ex) {
+			handleException("Failed to make " + field.getName() + " non-final", ex);
+		}
+
+		return field;
 	}
 }

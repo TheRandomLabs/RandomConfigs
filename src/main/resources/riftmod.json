@@ -1,0 +1,10 @@
+{
+	"id": "randomconfigs",
+	"name": "RandomConfigs",
+	"authors": [
+		"TheRandomLabs"
+	],
+	"listeners": [
+		"com.therandomlabs.randomconfigs.RandomConfigs"
+	]
+}

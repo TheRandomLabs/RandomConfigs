@@ -1,6 +1,7 @@
 package com.therandomlabs.randomconfigs;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,18 +10,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.world.DimensionType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.world.storage.WorldInfo;
 
-@Mod.EventBusSubscriber(modid = RandomConfigs.MODID)
 public final class DefaultGamerules {
 	public static class DefaultGamerule {
 		public String key;
@@ -35,17 +34,43 @@ public final class DefaultGamerules {
 	}
 
 	public static class DGGameRules extends GameRules {
+		private static final Field RULES = RandomConfigs.findField(GameRules.class, "rules", "b");
+
 		private final Set<String> forced;
 
-		public DGGameRules(GameRules rules, Set<String> forced) {
-			this.rules = rules.rules;
+		@SuppressWarnings("unchecked")
+		public DGGameRules(MinecraftServer server, GameRules rules, Set<String> forced)
+				throws Exception {
+			final Map<String, GameRules.Value> localRules =
+					(Map<String, GameRules.Value>) RULES.get(this);
+			final Map<String, GameRules.Value> originalRules =
+					(Map<String, GameRules.Value>) RULES.get(rules);
+
+			localRules.clear();
+			localRules.putAll(originalRules);
+
 			this.forced = forced;
+
+			for(String key : forced) {
+				final GameRules.Value value = localRules.get(key);
+				final BiConsumer<MinecraftServer, GameRules.Value> consumer =
+						(mcServer, newValue) -> {};
+
+				localRules.put(key, new GameRules.Value(key, value.getType(), consumer) {
+					{
+						super.setValue(value.getString(), server);
+					}
+
+					@Override
+					public void setValue(String value, MinecraftServer server) {}
+				});
+			}
 		}
 
 		@Override
-		public void setOrCreateGameRule(String key, String ruleValue) {
+		public void setOrCreateGameRule(String key, String ruleValue, MinecraftServer server) {
 			if(!forced.contains(key)) {
-				super.setOrCreateGameRule(key, ruleValue);
+				super.setOrCreateGameRule(key, ruleValue, server);
 			}
 		}
 	}
@@ -54,21 +79,29 @@ public final class DefaultGamerules {
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
 	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
 	public static final List<String> DEFAULT = RandomConfigs.readLines(
-			DefaultGamerules.class.getResourceAsStream("/assets/randomconfigs/defaultgamerules.json")
+			DefaultGamerules.class.getResourceAsStream(
+					"/data/randomconfigs/defaultgamerules.json"
+			)
+	);
+
+	private static final Field WORLD_INFO = RandomConfigs.findField(World.class, "worldInfo", "j");
+	private static final Field GAMERULES = RandomConfigs.removeFinalModifier(
+			RandomConfigs.findField(WorldInfo.class, "gameRules", "V")
 	);
 
 	private static List<DefaultGamerule> cachedDefaultGamerules;
 
-	@SubscribeEvent
-	public static void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
-		final World world = event.getWorld();
+	public static void onOverworldInit(World world) {
+		WorldInfo worldInfo = null;
 
-		if(world.provider.getDimensionType() != DimensionType.OVERWORLD) {
-			return;
+		try {
+			worldInfo = (WorldInfo) WORLD_INFO.get(world);
+		} catch(Exception ex) {
+			RandomConfigs.handleException("Failed to retrieve world info", ex);
 		}
 
-		final int gamemode = world.getWorldInfo().getGameType().getID();
-		final String type = world.getWorldType().getName();
+		final int gamemode = worldInfo.getGameType().getID();
+		final String type = world.getWorldType().func_211888_a();
 
 		List<DefaultGamerule> defaultGamerules = null;
 
@@ -84,19 +117,16 @@ public final class DefaultGamerules {
 			if(rule.key.equals(WORLD_BORDER_SIZE)) {
 				world.getWorldBorder().setSize(Integer.parseInt(rule.value));
 			} else {
-				world.worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+				worldInfo.getGameRulesInstance().setOrCreateGameRule(
+						rule.key,
+						rule.value,
+						world.getMinecraftServer()
+				);
 			}
 		}
 	}
 
-	@SubscribeEvent
-	public static void onWorldLoad(WorldEvent.Load event) {
-		final World world = event.getWorld();
-
-		if(world.isRemote) {
-			return;
-		}
-
+	public static void onWorldLoad(World world) {
 		List<DefaultGamerule> defaultGamerules = null;
 
 		if(cachedDefaultGamerules != null) {
@@ -104,7 +134,7 @@ public final class DefaultGamerules {
 			cachedDefaultGamerules = null;
 		} else {
 			final int gamemode = world.getWorldInfo().getGameType().getID();
-			final String type = world.getWorldType().getName();
+			final String type = world.getWorldType().func_211888_a();
 
 			try {
 				defaultGamerules = get(gamemode, type);
@@ -113,15 +143,24 @@ public final class DefaultGamerules {
 			}
 		}
 
-		final Set<String> forced = new HashSet<>();
+		try {
+			final MinecraftServer server = world.getMinecraftServer();
+			final WorldInfo worldInfo = (WorldInfo) WORLD_INFO.get(world);
+			final GameRules gamerules = (GameRules) GAMERULES.get(worldInfo);
 
-		for(DefaultGamerule rule : defaultGamerules) {
-			if(!rule.key.equals(WORLD_BORDER_SIZE)) {
-				forced.add(rule.key);
+			final Set<String> forced = new HashSet<>();
+
+			for(DefaultGamerule rule : defaultGamerules) {
+				if(rule.forced && !rule.key.equals(WORLD_BORDER_SIZE)) {
+					forced.add(rule.key);
+					gamerules.setOrCreateGameRule(rule.key, rule.value, server);
+				}
 			}
-		}
 
-		world.worldInfo.gameRules = new DGGameRules(world.worldInfo.gameRules, forced);
+			GAMERULES.set(worldInfo, new DGGameRules(server, gamerules, forced));
+		} catch(Exception ex) {
+			RandomConfigs.handleException("Failed to set GameRules instance", ex);
+		}
 	}
 
 	public static void create() throws IOException {

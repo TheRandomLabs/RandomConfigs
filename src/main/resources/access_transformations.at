@@ -1,0 +1,6 @@
+public-f field net.minecraft.world.GameRules rules Ljava/util/TreeMap
+public-f field axo b Ljava/util/TreeMap
+public field net.minecraft.world.World worldInfo Lnet/minecraft/world/storage/WorldInfo
+public field th j Lcbq
+public field net.minecraft.world.storage.WorldInfo gameRules Lnet/minecraft/world/GameRules
+public field cbq V Laxo
