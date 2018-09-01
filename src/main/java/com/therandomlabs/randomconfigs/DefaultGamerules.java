@@ -16,6 +16,7 @@ import net.minecraft.world.DimensionType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -69,7 +70,8 @@ public final class DefaultGamerules {
 			return;
 		}
 
-		final int gamemode = world.getWorldInfo().getGameType().getID();
+		final WorldInfo worldInfo = world.getWorldInfo();
+		final int gamemode = worldInfo.getGameType().getID();
 		final String type = world.getWorldType().getName();
 
 		List<DefaultGamerule> defaultGamerules = null;
@@ -86,7 +88,7 @@ public final class DefaultGamerules {
 			if(rule.key.equals(WORLD_BORDER_SIZE)) {
 				world.getWorldBorder().setSize(Integer.parseInt(rule.value));
 			} else {
-				world.worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+				worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
 			}
 		}
 	}
@@ -99,13 +101,14 @@ public final class DefaultGamerules {
 			return;
 		}
 
+		final WorldInfo worldInfo = world.getWorldInfo();
 		List<DefaultGamerule> defaultGamerules = null;
 
 		if(cachedDefaultGamerules != null) {
 			defaultGamerules = cachedDefaultGamerules;
 			cachedDefaultGamerules = null;
 		} else {
-			final int gamemode = world.worldInfo.getGameType().getID();
+			final int gamemode = worldInfo.getGameType().getID();
 			final String type = world.getWorldType().getName();
 
 			try {
@@ -123,13 +126,13 @@ public final class DefaultGamerules {
 					forced.add(rule.key);
 				}
 
-				if(!world.worldInfo.gameRules.hasRule(rule.key)) {
-					world.worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+				if(!worldInfo.gameRules.hasRule(rule.key)) {
+					worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
 				}
 			}
 		}
 
-		world.worldInfo.gameRules = new DGGameRules(world.worldInfo.gameRules, forced);
+		worldInfo.gameRules = new DGGameRules(worldInfo.gameRules, forced);
 	}
 
 	public static void create() throws IOException {
