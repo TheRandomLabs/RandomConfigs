@@ -53,7 +53,7 @@ public final class RandomConfigs {
 		}
 
 		try {
-			DefaultGamerules.ensureExists();
+			DefaultGameRules.ensureExists();
 		} catch(IOException ex) {
 			handleException("Failed to handle default gamerules", ex);
 		}
