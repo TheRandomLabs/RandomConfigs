@@ -6,7 +6,6 @@
 	"package": "com.therandomlabs.randomconfigs.mixin",
 	"refmap": "mixins.randomconfigs.refmap.json",
 	"mixins": [
-		"MixinOverworldDimension",
 		"MixinWorldServer"
 	],
 	"client": []

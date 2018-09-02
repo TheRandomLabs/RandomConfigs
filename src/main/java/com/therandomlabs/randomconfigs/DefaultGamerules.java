@@ -14,19 +14,23 @@ import java.util.function.BiConsumer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.therandomlabs.randomconfigs.api.listener.CreateSpawnPositionListener;
+import com.therandomlabs.randomconfigs.api.listener.WorldLoadListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldInfo;
 
-public final class DefaultGamerules {
-	public static class DefaultGamerule {
+public final class DefaultGameRules implements CreateSpawnPositionListener, WorldLoadListener {
+	public static class DefaultGameRule {
 		public String key;
 		public String value;
 		public boolean forced;
 
-		public DefaultGamerule(String key, String value, boolean forced) {
+		public DefaultGameRule(String key, String value, boolean forced) {
 			this.key = key;
 			this.value = value;
 			this.forced = forced;
@@ -79,19 +83,24 @@ public final class DefaultGamerules {
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
 	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
 	public static final List<String> DEFAULT = RandomConfigs.readLines(
-			DefaultGamerules.class.getResourceAsStream(
+			DefaultGameRules.class.getResourceAsStream(
 					"/data/randomconfigs/defaultgamerules.json"
 			)
 	);
 
 	private static final Field WORLD_INFO = RandomConfigs.findField(World.class, "worldInfo", "j");
-	private static final Field GAMERULES = RandomConfigs.removeFinalModifier(
+	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
 			RandomConfigs.findField(WorldInfo.class, "gameRules", "V")
 	);
 
-	private static List<DefaultGamerule> cachedDefaultGamerules;
+	private static List<DefaultGameRule> cachedDefaultGameRules;
 
-	public static void onOverworldInit(World world) {
+	@Override
+	public void onCreateSpawnPosition(WorldServer world) {
+		if(world.dimension.getType() != DimensionType.OVERWORLD) {
+			return;
+		}
+
 		WorldInfo worldInfo = null;
 
 		try {
@@ -103,17 +112,17 @@ public final class DefaultGamerules {
 		final int gamemode = worldInfo.getGameType().getID();
 		final String type = world.getWorldType().func_211888_a();
 
-		List<DefaultGamerule> defaultGamerules = null;
+		List<DefaultGameRule> defaultGameRules = null;
 
 		try {
-			defaultGamerules = get(gamemode, type);
+			defaultGameRules = get(gamemode, type);
 		} catch(Exception ex) {
 			RandomConfigs.handleException("Failed to read default gamerules", ex);
 		}
 
-		cachedDefaultGamerules = defaultGamerules;
+		cachedDefaultGameRules = defaultGameRules;
 
-		for(DefaultGamerule rule : defaultGamerules) {
+		for(DefaultGameRule rule : defaultGameRules) {
 			if(rule.key.equals(WORLD_BORDER_SIZE)) {
 				world.getWorldBorder().setSize(Integer.parseInt(rule.value));
 			} else {
@@ -126,18 +135,19 @@ public final class DefaultGamerules {
 		}
 	}
 
-	public static void onWorldLoad(World world) {
-		List<DefaultGamerule> defaultGamerules = null;
+	@Override
+	public void onWorldLoad(WorldServer world) {
+		List<DefaultGameRule> defaultGameRules = null;
 
-		if(cachedDefaultGamerules != null) {
-			defaultGamerules = cachedDefaultGamerules;
-			cachedDefaultGamerules = null;
+		if(cachedDefaultGameRules != null) {
+			defaultGameRules = cachedDefaultGameRules;
+			cachedDefaultGameRules = null;
 		} else {
 			final int gamemode = world.getWorldInfo().getGameType().getID();
 			final String type = world.getWorldType().func_211888_a();
 
 			try {
-				defaultGamerules = get(gamemode, type);
+				defaultGameRules = get(gamemode, type);
 			} catch(Exception ex) {
 				RandomConfigs.handleException("Failed to read default gamerules", ex);
 			}
@@ -146,18 +156,18 @@ public final class DefaultGamerules {
 		try {
 			final MinecraftServer server = world.getMinecraftServer();
 			final WorldInfo worldInfo = (WorldInfo) WORLD_INFO.get(world);
-			final GameRules gamerules = (GameRules) GAMERULES.get(worldInfo);
+			final GameRules gamerules = (GameRules) GAME_RULES.get(worldInfo);
 
 			final Set<String> forced = new HashSet<>();
 
-			for(DefaultGamerule rule : defaultGamerules) {
+			for(DefaultGameRule rule : defaultGameRules) {
 				if(rule.forced && !rule.key.equals(WORLD_BORDER_SIZE)) {
 					forced.add(rule.key);
 					gamerules.setOrCreateGameRule(rule.key, rule.value, server);
 				}
 			}
 
-			GAMERULES.set(worldInfo, new DGGameRules(server, gamerules, forced));
+			GAME_RULES.set(worldInfo, new DGGameRules(server, gamerules, forced));
 		} catch(Exception ex) {
 			RandomConfigs.handleException("Failed to set GameRules instance", ex);
 		}
@@ -177,7 +187,7 @@ public final class DefaultGamerules {
 		}
 	}
 
-	public static List<DefaultGamerule> get(int gamemode, String worldType) throws IOException {
+	public static List<DefaultGameRule> get(int gamemode, String worldType) throws IOException {
 		if(!exists()) {
 			create();
 			return Collections.emptyList();
@@ -185,14 +195,14 @@ public final class DefaultGamerules {
 
 		final JsonObject json = RandomConfigs.readJson(JSON);
 
-		final List<DefaultGamerule> gamerules = new ArrayList<>();
+		final List<DefaultGameRule> gameRules = new ArrayList<>();
 
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();
 			final JsonElement value = entry.getValue();
 
 			if(key.equals(WORLD_BORDER_SIZE)) {
-				gamerules.add(new DefaultGamerule(WORLD_BORDER_SIZE, value.toString(), false));
+				gameRules.add(new DefaultGameRule(WORLD_BORDER_SIZE, value.toString(), false));
 				continue;
 			}
 
@@ -203,21 +213,21 @@ public final class DefaultGamerules {
 			final JsonObject object = value.getAsJsonObject();
 
 			if(key.equals(MODE_OR_WORLD_TYPE_SPECIFIC)) {
-				getSpecific(gamerules, object, gamemode, worldType);
+				getSpecific(gameRules, object, gamemode, worldType);
 				continue;
 			}
 
-			final DefaultGamerule gamerule = get(key, object);
+			final DefaultGameRule gameRule = get(key, object);
 
-			if(gamerule != null) {
-				gamerules.add(gamerule);
+			if(gameRule != null) {
+				gameRules.add(gameRule);
 			}
 		}
 
-		return gamerules;
+		return gameRules;
 	}
 
-	private static void getSpecific(List<DefaultGamerule> gamerules, JsonObject json, int gamemode,
+	private static void getSpecific(List<DefaultGameRule> gameRules, JsonObject json, int gamemode,
 			String worldType) {
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();
@@ -233,7 +243,7 @@ public final class DefaultGamerules {
 			}
 
 			final JsonObject object = value.getAsJsonObject();
-			get(gamerules, object);
+			get(gameRules, object);
 		}
 	}
 
@@ -270,13 +280,13 @@ public final class DefaultGamerules {
 		return true;
 	}
 
-	private static void get(List<DefaultGamerule> gamerules, JsonObject json) {
+	private static void get(List<DefaultGameRule> gameRules, JsonObject json) {
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();
 			final JsonElement value = entry.getValue();
 
 			if(key.equals(WORLD_BORDER_SIZE)) {
-				gamerules.add(new DefaultGamerule(WORLD_BORDER_SIZE, value.toString(), false));
+				gameRules.add(new DefaultGameRule(WORLD_BORDER_SIZE, value.toString(), false));
 				continue;
 			}
 
@@ -284,15 +294,15 @@ public final class DefaultGamerules {
 				continue;
 			}
 
-			final DefaultGamerule gamerule = get(key, value.getAsJsonObject());
+			final DefaultGameRule gameRule = get(key, value.getAsJsonObject());
 
-			if(gamerule != null) {
-				gamerules.add(gamerule);
+			if(gameRule != null) {
+				gameRules.add(gameRule);
 			}
 		}
 	}
 
-	private static DefaultGamerule get(String key, JsonObject value) {
+	private static DefaultGameRule get(String key, JsonObject value) {
 		if(!value.has("value") || !value.has("forced")) {
 			return null;
 		}
@@ -309,6 +319,6 @@ public final class DefaultGamerules {
 			return null;
 		}
 
-		return new DefaultGamerule(key, value.get("value").toString(), primitive.getAsBoolean());
+		return new DefaultGameRule(key, value.get("value").toString(), primitive.getAsBoolean());
 	}
 }
