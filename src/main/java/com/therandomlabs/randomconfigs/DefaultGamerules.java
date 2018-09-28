@@ -88,7 +88,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 			)
 	);
 
-	private static final Field WORLD_INFO = RandomConfigs.findField(World.class, "worldInfo", "j");
+	private static final Field WORLD_INFO = RandomConfigs.findField(World.class, "worldInfo", "y");
 	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
 			RandomConfigs.findField(WorldInfo.class, "gameRules", "V")
 	);
