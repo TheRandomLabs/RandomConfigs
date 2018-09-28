@@ -8,8 +8,6 @@ import java.nio.file.StandardCopyOption;
 import com.google.gson.annotations.SerializedName;
 
 public final class DefaultConfigs {
-	private DefaultConfigs() {}
-
 	public static class Config {
 		public String source;
 		public String destination;
@@ -29,6 +27,8 @@ public final class DefaultConfigs {
 	public static final Path DIRECTORY = RandomConfigs.getConfig("defaultconfigs");
 	public static final Path JSON = RandomConfigs.getJson("defaultconfigs");
 	public static final Path OLD_JSON = RandomConfigs.getJson("defaultconfigs_old");
+
+	private DefaultConfigs() {}
 
 	public static void handle() throws IOException {
 		final Config[] configs = RandomConfigs.readJson(JSON, Config[].class);
@@ -91,7 +91,7 @@ public final class DefaultConfigs {
 		final Path source = RandomConfigs.getConfig("defaultconfigs/" + config.source);
 		final Path destination = RandomConfigs.getFile(config.destination);
 
-		if(config.version != oldVersion || !Files.exists(destination)) {
+		if(config.version != oldVersion || !destination.toFile().exists()) {
 			Files.createDirectories(destination.getParent());
 			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}

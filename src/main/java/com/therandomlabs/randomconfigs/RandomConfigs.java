@@ -11,10 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-import com.google.gson.Gson;
+import blue.endless.jankson.Jankson;
+import blue.endless.jankson.JsonObject;
+import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ReportedException;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -103,12 +103,30 @@ public final class RandomConfigs {
 
 	public static JsonObject readJson(Path json) {
 		final String raw = read(json);
-		return raw == null ? null : new JsonParser().parse(raw).getAsJsonObject();
+
+		if(raw != null) {
+			try {
+				return Jankson.builder().build().load(raw);
+			} catch(SyntaxError ex) {
+				handleException("Failed to read JSON: " + json, ex);
+			}
+		}
+
+		return null;
 	}
 
 	public static <T> T readJson(Path json, Class<T> clazz) {
 		final String raw = read(json);
-		return raw == null ? null : new Gson().fromJson(raw, clazz);
+
+		if(raw != null) {
+			try {
+				return Jankson.builder().build().fromJson(raw, clazz);
+			} catch(SyntaxError ex) {
+				handleException("Failed to read JSON: " + json, ex);
+			}
+		}
+
+		return null;
 	}
 
 	public static void writeJson(Path json, Object object) {
