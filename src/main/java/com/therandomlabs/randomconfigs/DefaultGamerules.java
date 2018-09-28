@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import blue.endless.jankson.JsonElement;
+import blue.endless.jankson.JsonObject;
+import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.api.listener.CreateSpawnPositionListener;
 import com.therandomlabs.randomconfigs.api.listener.WorldLoadListener;
 import net.minecraft.server.MinecraftServer;
@@ -44,7 +44,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 
 		@SuppressWarnings("unchecked")
 		public DGGameRules(MinecraftServer server, GameRules rules, Set<String> forced)
-				throws Exception {
+				throws IllegalAccessException {
 			final Map<String, GameRules.Value> localRules =
 					(Map<String, GameRules.Value>) RULES.get(this);
 			final Map<String, GameRules.Value> originalRules =
@@ -129,7 +129,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 				worldInfo.getGameRulesInstance().setOrCreateGameRule(
 						rule.key,
 						rule.value,
-						world.getMinecraftServer()
+						world.getServer()
 				);
 			}
 		}
@@ -154,7 +154,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		}
 
 		try {
-			final MinecraftServer server = world.getMinecraftServer();
+			final MinecraftServer server = world.getServer();
 			final WorldInfo worldInfo = (WorldInfo) WORLD_INFO.get(world);
 			final GameRules gamerules = (GameRules) GAME_RULES.get(worldInfo);
 
@@ -178,7 +178,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 	}
 
 	public static boolean exists() {
-		return Files.exists(JSON);
+		return JSON.toFile().exists();
 	}
 
 	public static void ensureExists() throws IOException {
@@ -206,11 +206,11 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 				continue;
 			}
 
-			if(!value.isJsonObject()) {
+			if(!(value instanceof JsonObject)) {
 				continue;
 			}
 
-			final JsonObject object = value.getAsJsonObject();
+			final JsonObject object = (JsonObject) value;
 
 			if(key.equals(MODE_OR_WORLD_TYPE_SPECIFIC)) {
 				getSpecific(gameRules, object, gamemode, worldType);
@@ -238,12 +238,11 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 
 			final JsonElement value = entry.getValue();
 
-			if(!value.isJsonObject()) {
+			if(!(value instanceof JsonObject)) {
 				continue;
 			}
 
-			final JsonObject object = value.getAsJsonObject();
-			get(gameRules, object);
+			get(gameRules, (JsonObject) value);
 		}
 	}
 
@@ -290,11 +289,11 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 				continue;
 			}
 
-			if(!value.isJsonObject()) {
+			if(!(value instanceof JsonObject)) {
 				continue;
 			}
 
-			final DefaultGameRule gameRule = get(key, value.getAsJsonObject());
+			final DefaultGameRule gameRule = get(key, (JsonObject) value);
 
 			if(gameRule != null) {
 				gameRules.add(gameRule);
@@ -302,23 +301,23 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		}
 	}
 
-	private static DefaultGameRule get(String key, JsonObject value) {
-		if(!value.has("value") || !value.has("forced")) {
+	private static DefaultGameRule get(String key, JsonObject object) {
+		final JsonElement value = object.get("value");
+
+		if(value == null) {
 			return null;
 		}
 
-		final JsonElement forced = value.get("forced");
+		final JsonElement forced = object.get("forced");
 
-		if(!forced.isJsonPrimitive()) {
+		if(!(forced instanceof JsonPrimitive)) {
 			return null;
 		}
 
-		final JsonPrimitive primitive = forced.getAsJsonPrimitive();
-
-		if(!primitive.isBoolean()) {
-			return null;
-		}
-
-		return new DefaultGameRule(key, value.get("value").toString(), primitive.getAsBoolean());
+		return new DefaultGameRule(
+				key,
+				value.toString(),
+				(boolean) ((JsonPrimitive) forced).getValue()
+		);
 	}
 }
