@@ -1,6 +1,8 @@
 {
 	"homepage": "https://minecraft.curseforge.com/projects/randomconfigs",
 	"1.12.2": {
+		"1.12.2-1.1.2.0": "Switched to Jankson for JSON processing.",
+		"1.12.2-1.1.1.0": "Minor refactor.",
 		"1.12.2-1.1.0.5": "Forced gamerules are now forcibly set after a world has already been created.",
 		"1.12.2-1.1.0.4": "Fixed all default gamerules being forced.",
 		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
@@ -11,6 +13,8 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.12.1": {
+		"1.12.2-1.1.2.0": "Switched to Jankson for JSON processing.",
+		"1.12.2-1.1.1.0": "Minor refactor.",
 		"1.12.2-1.1.0.5": "Forced gamerules are now forcibly set after a world has already been created.",
 		"1.12.2-1.1.0.4": "Fixed all default gamerules being forced.",
 		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
@@ -21,6 +25,8 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.12": {
+		"1.12.2-1.1.2.0": "Switched to Jankson for JSON processing.",
+		"1.12.2-1.1.1.0": "Minor refactor.",
 		"1.12.2-1.1.0.5": "Forced gamerules are now forcibly set after a world has already been created.",
 		"1.12.2-1.1.0.4": "Fixed all default gamerules being forced.",
 		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
@@ -31,6 +37,8 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.11.2": {
+		"1.12.2-1.1.2.0": "Switched to Jankson for JSON processing.",
+		"1.12.2-1.1.1.0": "Minor refactor.",
 		"1.12.2-1.1.0.5": "Forced gamerules are now forcibly set after a world has already been created.",
 		"1.12.2-1.1.0.4": "Fixed all default gamerules being forced.",
 		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
@@ -41,6 +49,8 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.11": {
+		"1.12.2-1.1.2.0": "Switched to Jankson for JSON processing.",
+		"1.12.2-1.1.1.0": "Minor refactor.",
 		"1.12.2-1.1.0.5": "Forced gamerules are now forcibly set after a world has already been created.",
 		"1.12.2-1.1.0.4": "Fixed all default gamerules being forced.",
 		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
@@ -51,6 +61,8 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.10.2": {
+		"1.12.2-1.1.2.0": "Switched to Jankson for JSON processing.",
+		"1.12.2-1.1.1.0": "Minor refactor.",
 		"1.12.2-1.1.0.5": "Forced gamerules are now forcibly set after a world has already been created.",
 		"1.12.2-1.1.0.4": "Fixed all default gamerules being forced.",
 		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
@@ -61,6 +73,8 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.10": {
+		"1.12.2-1.1.2.0": "Switched to Jankson for JSON processing.",
+		"1.12.2-1.1.1.0": "Minor refactor.",
 		"1.12.2-1.1.0.5": "Forced gamerules are now forcibly set after a world has already been created.",
 		"1.12.2-1.1.0.4": "Fixed all default gamerules being forced.",
 		"1.12.2-1.1.0.3": "Fixed invalid information in the default default gamerules.",
@@ -71,15 +85,15 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"promos": {
-		"1.12.2-latest": "1.12.2-1.1.0.5",
-		"1.12.2-recommended": "1.12.2-1.1.0.5",
-		"1.12.1-latest": "1.12.2-1.1.0.5",
-		"1.12.1-recommended": "1.12.2-1.1.0.5",
-		"1.12-latest": "1.12.2-1.1.0.5",
-		"1.12-recommended": "1.12.2-1.1.0.5",
-		"1.11.2-latest": "1.12.2-1.1.0.5",
-		"1.11-recommended": "1.12.2-1.1.0.5",
-		"1.10.2-latest": "1.12.2-1.1.0.5",
-		"1.10-recommended": "1.12.2-1.1.0.5"
+		"1.12.2-latest": "1.12.2-1.1.2.0",
+		"1.12.2-recommended": "1.12.2-1.1.2.0",
+		"1.12.1-latest": "1.12.2-1.1.2.0",
+		"1.12.1-recommended": "1.12.2-1.1.2.0",
+		"1.12-latest": "1.12.2-1.1.2.0",
+		"1.12-recommended": "1.12.2-1.1.2.0",
+		"1.11.2-latest": "1.12.2-1.1.2.0",
+		"1.11-recommended": "1.12.2-1.1.2.0",
+		"1.10.2-latest": "1.12.2-1.1.2.0",
+		"1.10-recommended": "1.12.2-1.1.2.0"
 	}
 }
