@@ -28,15 +28,27 @@ repositories {
 	}
 }
 
-shadowJar {
-	classifier = ""
-	relocate "blue.endless.jankson", "${group}.repackage.blue.endless.jankson"
-	configurations = [project.configurations.shadow]
-}
-
 dependencies {
 	shadow "blue.endless:Jankson:0.0.4"
 	compile "blue.endless:Jankson:0.0.4"
+}
+
+shadowJar {
+	classifier = ""
+	relocate "blue.endless.jankson", "com.therandomlabs.randomconfigs.repackage.blue.endless.jankson"
+	configurations = [project.configurations.shadow]
+}
+
+reobf {
+	shadowJar {
+		mappingType = "SEARGE"
+	}
+}
+
+tasks.build.dependsOn reobfShadowJar
+
+artifacts {
+	archives shadowJar
 }
 
 minecraft {
