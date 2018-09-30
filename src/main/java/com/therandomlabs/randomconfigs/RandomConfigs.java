@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ReportedException;
@@ -114,11 +115,20 @@ public final class RandomConfigs implements InitializationListener {
 	}
 
 	public static <T> T readJson(Path json, Class<T> clazz) {
-		final String raw = read(json);
+		String raw = read(json);
 
 		if(raw != null) {
 			try {
-				return Jankson.builder().build().fromJson(raw, clazz);
+				final Jankson jankson = Jankson.builder().build();
+
+				if(clazz.isArray()) {
+					//Shoddy workaround until I figure out how to parse arrays with Jankson
+					raw = jankson.load("{\"array\":" + raw + "}").get("array").toJson();
+				} else {
+					raw = jankson.load(raw).toJson();
+				}
+
+				return new Gson().fromJson(raw, clazz);
 			} catch(SyntaxError ex) {
 				handleException("Failed to read JSON: " + json, ex);
 			}
