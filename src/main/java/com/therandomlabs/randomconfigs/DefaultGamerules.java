@@ -79,7 +79,7 @@ public final class DefaultGameRules {
 		try {
 			defaultGameRules = get(gamemode, type);
 		} catch(Exception ex) {
-			RandomConfigs.handleException("Failed to read default gamerules", ex);
+			RandomConfigs.crashReport("Failed to read default gamerules", ex);
 		}
 
 		cachedDefaultGameRules = defaultGameRules;
@@ -114,7 +114,7 @@ public final class DefaultGameRules {
 			try {
 				defaultGameRules = get(gamemode, type);
 			} catch(Exception ex) {
-				RandomConfigs.handleException("Failed to read default gamerules", ex);
+				RandomConfigs.crashReport("Failed to read default gamerules", ex);
 			}
 		}
 
@@ -148,6 +148,7 @@ public final class DefaultGameRules {
 		}
 	}
 
+	@SuppressWarnings("Duplicates")
 	public static List<DefaultGameRule> get(int gamemode, String worldType) throws IOException {
 		if(!exists()) {
 			create();
@@ -240,6 +241,7 @@ public final class DefaultGameRules {
 		return true;
 	}
 
+	@SuppressWarnings("Duplicates")
 	private static void get(List<DefaultGameRule> gameRules, JsonObject json) {
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();

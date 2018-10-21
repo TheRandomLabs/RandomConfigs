@@ -50,13 +50,13 @@ public final class RandomConfigs {
 		try {
 			DefaultConfigs.handle();
 		} catch(IOException ex) {
-			handleException("Failed to handle default configs", ex);
+			crashReport("Failed to handle default configs", ex);
 		}
 
 		try {
 			DefaultGameRules.ensureExists();
 		} catch(IOException ex) {
-			handleException("Failed to handle default gamerules", ex);
+			crashReport("Failed to handle default gamerules", ex);
 		}
 	}
 
@@ -74,7 +74,7 @@ public final class RandomConfigs {
 		try {
 			Files.createDirectories(CONFIG_DIR);
 		} catch(IOException ex) {
-			handleException("Failed to create: " + CONFIG_DIR, ex);
+			crashReport("Failed to create: " + CONFIG_DIR, ex);
 		}
 
 		final Path path = CONFIG_DIR.resolve(fileName).normalize();
@@ -91,7 +91,7 @@ public final class RandomConfigs {
 			return StringUtils.join(Files.readAllLines(path), System.lineSeparator());
 		} catch(IOException ex) {
 			if(!(ex instanceof NoSuchFileException)) {
-				handleException("Failed to read file: " + path, ex);
+				crashReport("Failed to read file: " + path, ex);
 			}
 		}
 
@@ -109,7 +109,7 @@ public final class RandomConfigs {
 			try {
 				return Jankson.builder().build().load(raw);
 			} catch(SyntaxError ex) {
-				handleException("Failed to read JSON: " + json, ex);
+				crashReport("Failed to read JSON: " + json, ex);
 			}
 		}
 
@@ -132,7 +132,7 @@ public final class RandomConfigs {
 
 				return new Gson().fromJson(raw, clazz);
 			} catch(SyntaxError ex) {
-				handleException("Failed to read JSON: " + json, ex);
+				crashReport("Failed to read JSON: " + json, ex);
 			}
 		}
 
@@ -146,7 +146,7 @@ public final class RandomConfigs {
 		try {
 			Files.write(json, (raw + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
 		} catch(IOException ex) {
-			handleException("Failed to write to: " + json, ex);
+			crashReport("Failed to write to: " + json, ex);
 		}
 	}
 
@@ -172,7 +172,7 @@ public final class RandomConfigs {
 		return Arrays.asList(NEWLINE.split(readString(stream)));
 	}
 
-	public static void handleException(String message, Exception ex) {
+	public static void crashReport(String message, Exception ex) {
 		throw new ReportedException(new CrashReport(message, ex));
 	}
 }
