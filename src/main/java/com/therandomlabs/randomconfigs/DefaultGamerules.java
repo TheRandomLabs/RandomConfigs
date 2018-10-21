@@ -56,18 +56,9 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 			this.forced = forced;
 
 			for(String key : forced) {
-				final GameRules.Value value = localRules.get(key);
-				final BiConsumer<MinecraftServer, GameRules.Value> consumer =
-						(mcServer, newValue) -> {};
-
-				localRules.put(key, new GameRules.Value(key, value.getType(), consumer) {
-					{
-						super.setValue(value.getString(), server);
-					}
-
-					@Override
-					public void setValue(String value, MinecraftServer server) {}
-				});
+				localRules.put(key, new DGValue(
+						key, localRules.get(key), (mcServer, newValue) -> {}, server
+				));
 			}
 		}
 
@@ -77,6 +68,17 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 				super.setOrCreateGameRule(key, ruleValue, server);
 			}
 		}
+	}
+
+	public static class DGValue extends GameRules.Value {
+		public DGValue(String key, GameRules.Value value,
+				BiConsumer<MinecraftServer, GameRules.Value> consumer, MinecraftServer server) {
+			super(key, value.getType(), consumer);
+			super.setValue(value.getString(), server);
+		}
+
+		@Override
+		public void setValue(String value, MinecraftServer server) {}
 	}
 
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
@@ -106,7 +108,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		try {
 			worldInfo = (WorldInfo) WORLD_INFO.get(world);
 		} catch(Exception ex) {
-			RandomConfigs.handleException("Failed to retrieve world info", ex);
+			RandomConfigs.crashReport("Failed to retrieve world info", ex);
 		}
 
 		final int gamemode = worldInfo.getGameType().getID();
@@ -117,7 +119,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		try {
 			defaultGameRules = get(gamemode, type);
 		} catch(Exception ex) {
-			RandomConfigs.handleException("Failed to read default gamerules", ex);
+			RandomConfigs.crashReport("Failed to read default gamerules", ex);
 		}
 
 		cachedDefaultGameRules = defaultGameRules;
@@ -149,7 +151,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 			try {
 				defaultGameRules = get(gamemode, type);
 			} catch(Exception ex) {
-				RandomConfigs.handleException("Failed to read default gamerules", ex);
+				RandomConfigs.crashReport("Failed to read default gamerules", ex);
 			}
 		}
 
@@ -169,7 +171,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 
 			GAME_RULES.set(worldInfo, new DGGameRules(server, gamerules, forced));
 		} catch(Exception ex) {
-			RandomConfigs.handleException("Failed to set GameRules instance", ex);
+			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
 		}
 	}
 
@@ -187,6 +189,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		}
 	}
 
+	@SuppressWarnings("Duplicates")
 	public static List<DefaultGameRule> get(int gamemode, String worldType) throws IOException {
 		if(!exists()) {
 			create();
@@ -279,6 +282,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		return true;
 	}
 
+	@SuppressWarnings("Duplicates")
 	private static void get(List<DefaultGameRule> gameRules, JsonObject json) {
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();
