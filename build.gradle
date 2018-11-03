@@ -23,7 +23,7 @@ apply plugin: "org.spongepowered.mixin"
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "java"
 
-version = "1.13-1.1.2.1-rift"
+version = "1.13-1.1.2.3-rift"
 group = "com.therandomlabs.randomconfigs"
 archivesBaseName = "randomconfigs"
 
@@ -73,4 +73,21 @@ minecraft {
 	runDir = "run"
 	mappings = "snapshot_20180908"
 	tweakClass = "org.dimdev.riftloader.launch.RiftLoaderClientTweaker"
+
+	replace "@FINGERPRINT@", project.findProperty("signSHA1")
 }
+
+task signJar(type: SignJar, dependsOn: reobfJar) {
+	onlyIf {
+		project.hasProperty("keyStore")
+	}
+
+	keyStore = project.findProperty("keyStore")
+	alias = project.findProperty("keyStoreAlias")
+	storePass = project.findProperty("keyStorePass")
+	keyPass = project.findProperty("keyStoreKeyPass")
+	inputFile = jar.archivePath
+	outputFile = jar.archivePath
+}
+
+build.dependsOn signJar

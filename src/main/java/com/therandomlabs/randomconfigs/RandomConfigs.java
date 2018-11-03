@@ -18,9 +18,12 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.therandomlabs.randomconfigs.util.CertificateHelper;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ReportedException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dimdev.riftloader.RiftLoader;
 import org.dimdev.riftloader.Side;
 import org.dimdev.riftloader.listener.InitializationListener;
@@ -28,12 +31,15 @@ import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
 public final class RandomConfigs implements InitializationListener {
-	public static final String MODID = "randomconfigs";
+	public static final String MOD_ID = "randomconfigs";
+	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
+
+	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	public static final boolean IS_CLIENT = RiftLoader.instance.getSide() == Side.CLIENT;
 
 	public static final Path MC_DIR = Paths.get(".").toAbsolutePath().normalize();
-	public static final Path CONFIG_DIR = MC_DIR.resolve("config").resolve(MODID);
+	public static final Path CONFIG_DIR = MC_DIR.resolve("config").resolve(MOD_ID);
 
 	public static final String NEWLINE_REGEX = "(\r\n|\r|\n)";
 	public static final Pattern NEWLINE = Pattern.compile(NEWLINE_REGEX);
@@ -42,8 +48,12 @@ public final class RandomConfigs implements InitializationListener {
 
 	@Override
 	public void onInitialization() {
+		if(!verifyFingerprint()) {
+			LOGGER.error("Invalid fingerprint detected for RandomConfigs!");
+		}
+
 		MixinBootstrap.init();
-		Mixins.addConfiguration("mixins." + MODID + ".json");
+		Mixins.addConfiguration("mixins." + MOD_ID + ".json");
 
 		try {
 			DefaultConfigs.handle();
@@ -138,8 +148,11 @@ public final class RandomConfigs implements InitializationListener {
 	}
 
 	public static void writeJson(Path json, Object object) {
-		final String raw = new GsonBuilder().setPrettyPrinting().create().toJson(object).
-				replaceAll(" {2}", "\t");
+		final String raw = new GsonBuilder().
+				setPrettyPrinting().
+				disableHtmlEscaping().
+				create().
+				toJson(object).replaceAll(" {2}", "\t");
 
 		try {
 			Files.write(json, (raw + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
@@ -198,5 +211,19 @@ public final class RandomConfigs implements InitializationListener {
 		}
 
 		return field;
+	}
+
+	private static boolean verifyFingerprint() {
+		final List<String> fingerprints = CertificateHelper.getFingerprints(
+				RandomConfigs.class.getProtectionDomain().getCodeSource().getCertificates()
+		);
+
+		for(String fingerprint : fingerprints) {
+			if(CERTIFICATE_FINGERPRINT.equals(fingerprint)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
