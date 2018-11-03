@@ -140,8 +140,11 @@ public final class RandomConfigs {
 	}
 
 	public static void writeJson(Path json, Object object) {
-		final String raw = new GsonBuilder().setPrettyPrinting().create().toJson(object).
-				replaceAll(" {2}", "\t");
+		final String raw = new GsonBuilder().
+				setPrettyPrinting().
+				disableHtmlEscaping().
+				create().
+				toJson(object).replaceAll(" {2}", "\t");
 
 		try {
 			Files.write(json, (raw + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
