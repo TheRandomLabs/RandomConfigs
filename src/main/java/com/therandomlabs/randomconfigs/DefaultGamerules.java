@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -17,6 +18,7 @@ import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.api.listener.CreateSpawnPositionListener;
 import com.therandomlabs.randomconfigs.api.listener.WorldLoadListener;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
@@ -82,8 +84,11 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 	}
 
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
+	public static final String DIFFICULTY = "DIFFICULTY";
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
+
 	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
+
 	public static final List<String> DEFAULT = RandomConfigs.readLines(
 			DefaultGameRules.class.getResourceAsStream(
 					"/data/randomconfigs/defaultgamerules.json"
@@ -125,15 +130,32 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		cachedDefaultGameRules = defaultGameRules;
 
 		for(DefaultGameRule rule : defaultGameRules) {
-			if(rule.key.equals(WORLD_BORDER_SIZE)) {
-				world.getWorldBorder().setSize(Integer.parseInt(rule.value));
-			} else {
-				worldInfo.getGameRulesInstance().setOrCreateGameRule(
-						rule.key,
-						rule.value,
-						world.getServer()
-				);
+			if(rule.key.equals(DIFFICULTY)) {
+				try {
+					worldInfo.setDifficulty(
+							EnumDifficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
+					);
+					worldInfo.setDifficultyLocked(rule.forced);
+				} catch(IllegalArgumentException ex) {
+					RandomConfigs.LOGGER.error("Invalid difficulty: " + rule.value);
+				}
+
+				continue;
 			}
+
+			if(rule.key.equals(WORLD_BORDER_SIZE)) {
+				try {
+					world.getWorldBorder().setSize(Integer.parseInt(rule.value));
+				} catch(NumberFormatException ex) {
+					RandomConfigs.LOGGER.error("Invalid world border size: " + rule.value);
+				}
+
+				continue;
+			}
+
+			worldInfo.getGameRulesInstance().setOrCreateGameRule(
+					rule.key, rule.value, world.getServer()
+			);
 		}
 	}
 
@@ -163,10 +185,13 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 			final Set<String> forced = new HashSet<>();
 
 			for(DefaultGameRule rule : defaultGameRules) {
-				if(rule.forced && !rule.key.equals(WORLD_BORDER_SIZE)) {
-					forced.add(rule.key);
-					gamerules.setOrCreateGameRule(rule.key, rule.value, server);
+				if(!rule.forced || rule.key.equals(DIFFICULTY) ||
+						rule.key.equals(WORLD_BORDER_SIZE)) {
+					continue;
 				}
+
+				forced.add(rule.key);
+				gamerules.setOrCreateGameRule(rule.key, rule.value, server);
 			}
 
 			GAME_RULES.set(worldInfo, new DGGameRules(server, gamerules, forced));
@@ -308,7 +333,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 	private static DefaultGameRule get(String key, JsonObject object) {
 		final JsonElement value = object.get("value");
 
-		if(value == null) {
+		if(!(value instanceof JsonPrimitive)) {
 			return null;
 		}
 
@@ -320,7 +345,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 
 		return new DefaultGameRule(
 				key,
-				value.toString(),
+				((JsonPrimitive) value).asString(),
 				(boolean) ((JsonPrimitive) forced).getValue()
 		);
 	}

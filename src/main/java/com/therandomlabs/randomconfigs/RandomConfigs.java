@@ -38,6 +38,11 @@ public final class RandomConfigs implements InitializationListener {
 
 	public static final boolean IS_CLIENT = RiftLoader.instance.getSide() == Side.CLIENT;
 
+	public static final Gson GSON = new GsonBuilder().
+			setPrettyPrinting().
+			disableHtmlEscaping().
+			create();
+
 	public static final Path MC_DIR = Paths.get(".").toAbsolutePath().normalize();
 	public static final Path CONFIG_DIR = MC_DIR.resolve("config").resolve(MOD_ID);
 
@@ -138,7 +143,7 @@ public final class RandomConfigs implements InitializationListener {
 					raw = jankson.load(raw).toJson();
 				}
 
-				return new Gson().fromJson(raw, clazz);
+				return GSON.fromJson(raw, clazz);
 			} catch(SyntaxError ex) {
 				crashReport("Failed to read JSON: " + json, ex);
 			}
@@ -148,11 +153,7 @@ public final class RandomConfigs implements InitializationListener {
 	}
 
 	public static void writeJson(Path json, Object object) {
-		final String raw = new GsonBuilder().
-				setPrettyPrinting().
-				disableHtmlEscaping().
-				create().
-				toJson(object).replaceAll(" {2}", "\t");
+		final String raw = GSON.toJson(object).replaceAll(" {2}", "\t");
 
 		try {
 			Files.write(json, (raw + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
