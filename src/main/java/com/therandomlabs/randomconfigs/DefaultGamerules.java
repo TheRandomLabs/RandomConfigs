@@ -117,7 +117,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 		}
 
 		final int gamemode = worldInfo.getGameType().getID();
-		final String type = world.getWorldType().func_211888_a();
+		final String type = world.getWorldType().getName();
 
 		List<DefaultGameRule> defaultGameRules = null;
 
@@ -168,7 +168,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 			cachedDefaultGameRules = null;
 		} else {
 			final int gamemode = world.getWorldInfo().getGameType().getID();
-			final String type = world.getWorldType().func_211888_a();
+			final String type = world.getWorldType().getName();
 
 			try {
 				defaultGameRules = get(gamemode, type);
