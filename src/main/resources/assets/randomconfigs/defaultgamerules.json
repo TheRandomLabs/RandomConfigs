@@ -32,6 +32,12 @@
 		//:TYPE,TYPE,...
 		//For example, use ":void" to specify gamerules for all Void worlds.
 		"survival": {
+			"DIFFICULTY": {
+				//Valid values: "peaceful", "easy", "normal", "hard"
+				"value": "hard",
+				//Whether the difficulty should be locked on world creation
+				"forced": true
+			},
 			//This is used to set the world border size in blocks from (0, 0).
 			"WORLD_BORDER_SIZE": 10000
 		}

@@ -22,25 +22,36 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod(modid = RandomConfigs.MODID, version = RandomConfigs.VERSION,
+@Mod(
+		modid = RandomConfigs.MOD_ID, version = RandomConfigs.VERSION,
 		acceptedMinecraftVersions = RandomConfigs.ACCEPTED_MINECRAFT_VERSIONS,
 		acceptableRemoteVersions = RandomConfigs.ACCEPTABLE_REMOTE_VERSIONS,
 		updateJSON = RandomConfigs.UPDATE_JSON,
-		certificateFingerprint = RandomConfigs.CERTIFICATE_FINGERPRINT)
+		certificateFingerprint = RandomConfigs.CERTIFICATE_FINGERPRINT
+)
 public final class RandomConfigs {
-	public static final String MODID = "randomconfigs";
+	public static final String MOD_ID = "randomconfigs";
 	public static final String VERSION = "@VERSION@";
-	public static final String ACCEPTED_MINECRAFT_VERSIONS = "[1.10,1.14)";
+	public static final String ACCEPTED_MINECRAFT_VERSIONS = "[1.10,1.13)";
 	public static final String ACCEPTABLE_REMOTE_VERSIONS = "*";
 	public static final String UPDATE_JSON =
 			"https://raw.githubusercontent.com/TheRandomLabs/RandomConfigs/misc/versions.json";
 	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
 
+	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+
 	public static final boolean IS_CLIENT = FMLCommonHandler.instance().getSide().isClient();
 
+	public static final Gson GSON = new GsonBuilder().
+			setPrettyPrinting().
+			disableHtmlEscaping().
+			create();
+
 	public static final Path MC_DIR = Paths.get(".").toAbsolutePath().normalize();
-	public static final Path CONFIG_DIR = MC_DIR.resolve("config").resolve(MODID);
+	public static final Path CONFIG_DIR = MC_DIR.resolve("config").resolve(MOD_ID);
 
 	public static final String NEWLINE_REGEX = "(\r\n|\r|\n)";
 	public static final Pattern NEWLINE = Pattern.compile(NEWLINE_REGEX);
@@ -130,7 +141,7 @@ public final class RandomConfigs {
 					raw = jankson.load(raw).toJson();
 				}
 
-				return new Gson().fromJson(raw, clazz);
+				return GSON.fromJson(raw, clazz);
 			} catch(SyntaxError ex) {
 				crashReport("Failed to read JSON: " + json, ex);
 			}
@@ -140,11 +151,7 @@ public final class RandomConfigs {
 	}
 
 	public static void writeJson(Path json, Object object) {
-		final String raw = new GsonBuilder().
-				setPrettyPrinting().
-				disableHtmlEscaping().
-				create().
-				toJson(object).replaceAll(" {2}", "\t");
+		final String raw = GSON.toJson(object).replaceAll(" {2}", "\t");
 
 		try {
 			Files.write(json, (raw + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));

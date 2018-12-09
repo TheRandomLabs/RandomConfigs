@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import net.minecraft.world.DimensionType;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
@@ -21,7 +23,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod.EventBusSubscriber(modid = RandomConfigs.MODID)
+@Mod.EventBusSubscriber(modid = RandomConfigs.MOD_ID)
 public final class DefaultGameRules {
 	public static class DefaultGameRule {
 		public String key;
@@ -52,8 +54,11 @@ public final class DefaultGameRules {
 	}
 
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
+	public static final String DIFFICULTY = "DIFFICULTY";
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
+
 	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
+
 	public static final List<String> DEFAULT = RandomConfigs.readLines(
 			DefaultGameRules.class.getResourceAsStream(
 					"/assets/randomconfigs/defaultgamerules.json"
@@ -85,11 +90,30 @@ public final class DefaultGameRules {
 		cachedDefaultGameRules = defaultGameRules;
 
 		for(DefaultGameRule rule : defaultGameRules) {
-			if(rule.key.equals(WORLD_BORDER_SIZE)) {
-				world.getWorldBorder().setSize(Integer.parseInt(rule.value));
-			} else {
-				worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+			if(rule.key.equals(DIFFICULTY)) {
+				try {
+					worldInfo.setDifficulty(
+							EnumDifficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
+					);
+					worldInfo.setDifficultyLocked(rule.forced);
+				} catch(IllegalArgumentException ex) {
+					RandomConfigs.LOGGER.error("Invalid difficulty: " + rule.value);
+				}
+
+				continue;
 			}
+
+			if(rule.key.equals(WORLD_BORDER_SIZE)) {
+				try {
+					world.getWorldBorder().setSize(Integer.parseInt(rule.value));
+				} catch(NumberFormatException ex) {
+					RandomConfigs.LOGGER.error("Invalid world border size: " + rule.value);
+				}
+
+				continue;
+			}
+
+			worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
 		}
 	}
 
@@ -121,13 +145,18 @@ public final class DefaultGameRules {
 		final Set<String> forced = new HashSet<>();
 
 		for(DefaultGameRule rule : defaultGameRules) {
-			if(!rule.key.equals(WORLD_BORDER_SIZE)) {
-				if(rule.forced) {
-					forced.add(rule.key);
-					worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
-				} else if(!worldInfo.gameRules.hasRule(rule.key)) {
-					worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
-				}
+			if(rule.key.equals(DIFFICULTY) || rule.key.equals(WORLD_BORDER_SIZE)) {
+				continue;
+			}
+
+			if(rule.forced) {
+				forced.add(rule.key);
+				worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+				continue;
+			}
+
+			if(!worldInfo.gameRules.hasRule(rule.key)) {
+				worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
 			}
 		}
 
@@ -156,7 +185,6 @@ public final class DefaultGameRules {
 		}
 
 		final JsonObject json = RandomConfigs.readJson(JSON);
-
 		final List<DefaultGameRule> gameRules = new ArrayList<>();
 
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
@@ -267,7 +295,7 @@ public final class DefaultGameRules {
 	private static DefaultGameRule get(String key, JsonObject object) {
 		final JsonElement value = object.get("value");
 
-		if(value == null) {
+		if(!(value instanceof JsonPrimitive)) {
 			return null;
 		}
 
@@ -279,7 +307,7 @@ public final class DefaultGameRules {
 
 		return new DefaultGameRule(
 				key,
-				value.toString(),
+				((JsonPrimitive) value).asString(),
 				(boolean) ((JsonPrimitive) forced).getValue()
 		);
 	}
