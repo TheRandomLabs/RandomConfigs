@@ -1,4 +1,4 @@
-package com.therandomlabs.randomconfigs;
+package com.therandomlabs.randomconfigs.gamerule;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
+import com.therandomlabs.randomconfigs.RandomConfigs;
 import com.therandomlabs.randomconfigs.api.listener.CreateSpawnPositionListener;
 import com.therandomlabs.randomconfigs.api.listener.WorldLoadListener;
 import net.minecraft.server.MinecraftServer;
@@ -27,62 +27,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldInfo;
 
 public final class DefaultGameRules implements CreateSpawnPositionListener, WorldLoadListener {
-	public static class DefaultGameRule {
-		public String key;
-		public String value;
-		public boolean forced;
-
-		public DefaultGameRule(String key, String value, boolean forced) {
-			this.key = key;
-			this.value = value;
-			this.forced = forced;
-		}
-	}
-
-	public static class DGGameRules extends GameRules {
-		private static final Field RULES = RandomConfigs.findField(GameRules.class, "rules", "b");
-
-		private final Set<String> forced;
-
-		@SuppressWarnings("unchecked")
-		public DGGameRules(MinecraftServer server, GameRules rules, Set<String> forced)
-				throws IllegalAccessException {
-			final Map<String, GameRules.Value> localRules =
-					(Map<String, GameRules.Value>) RULES.get(this);
-			final Map<String, GameRules.Value> originalRules =
-					(Map<String, GameRules.Value>) RULES.get(rules);
-
-			localRules.clear();
-			localRules.putAll(originalRules);
-
-			this.forced = forced;
-
-			for(String key : forced) {
-				localRules.put(key, new DGValue(
-						key, localRules.get(key), (mcServer, newValue) -> {}, server
-				));
-			}
-		}
-
-		@Override
-		public void setOrCreateGameRule(String key, String ruleValue, MinecraftServer server) {
-			if(!forced.contains(key)) {
-				super.setOrCreateGameRule(key, ruleValue, server);
-			}
-		}
-	}
-
-	public static class DGValue extends GameRules.Value {
-		public DGValue(String key, GameRules.Value value,
-				BiConsumer<MinecraftServer, GameRules.Value> consumer, MinecraftServer server) {
-			super(key, value.getType(), consumer);
-			super.setValue(value.getString(), server);
-		}
-
-		@Override
-		public void setValue(String value, MinecraftServer server) {}
-	}
-
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
 	public static final String DIFFICULTY = "DIFFICULTY";
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
@@ -194,7 +138,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 				gamerules.setOrCreateGameRule(rule.key, rule.value, server);
 			}
 
-			GAME_RULES.set(worldInfo, new DGGameRules(server, gamerules, forced));
+			GAME_RULES.set(worldInfo, new RCGameRules(server, gamerules, forced));
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
 		}
