@@ -1,4 +1,4 @@
-package com.therandomlabs.randomconfigs.gamerule;
+package com.therandomlabs.randomconfigs.gamerules;
 
 import java.util.function.BiConsumer;
 import net.minecraft.server.MinecraftServer;

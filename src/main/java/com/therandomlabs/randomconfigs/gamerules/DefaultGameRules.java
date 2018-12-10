@@ -1,4 +1,4 @@
-package com.therandomlabs.randomconfigs.gamerule;
+package com.therandomlabs.randomconfigs.gamerules;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

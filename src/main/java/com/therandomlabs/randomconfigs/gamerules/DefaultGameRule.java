@@ -1,4 +1,4 @@
-package com.therandomlabs.randomconfigs.gamerule;
+package com.therandomlabs.randomconfigs.gamerules;
 
 public class DefaultGameRule {
 	public String key;

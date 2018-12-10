@@ -2,8 +2,8 @@
 	/*
 	//Top-level gamerules are set for all game modes and world types.
 	"commandBlockOutput": {
-		//Each gamerule has two properties: the value, and whether the value should be forced.
-		//If "forced" is set to true, RandomConfigs will make sure that gamerule is not changed.
+		//Each gamerules has two properties: the value, and whether the value should be forced.
+		//If "forced" is set to true, RandomConfigs will make sure that gamerules is not changed.
 		"value": false,
 		"forced": false
 	},
