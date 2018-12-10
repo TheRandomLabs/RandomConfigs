@@ -1,4 +1,4 @@
-package com.therandomlabs.randomconfigs;
+package com.therandomlabs.randomconfigs.gamerules;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,9 +13,9 @@ import java.util.Set;
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
+import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
@@ -25,34 +25,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod.EventBusSubscriber(modid = RandomConfigs.MOD_ID)
 public final class DefaultGameRules {
-	public static class DefaultGameRule {
-		public String key;
-		public String value;
-		public boolean forced;
-
-		public DefaultGameRule(String key, String value, boolean forced) {
-			this.key = key;
-			this.value = value;
-			this.forced = forced;
-		}
-	}
-
-	public static class DGGameRules extends GameRules {
-		private final Set<String> forced;
-
-		public DGGameRules(GameRules rules, Set<String> forced) {
-			this.rules = rules.rules;
-			this.forced = forced;
-		}
-
-		@Override
-		public void setOrCreateGameRule(String key, String ruleValue) {
-			if(!forced.contains(key)) {
-				super.setOrCreateGameRule(key, ruleValue);
-			}
-		}
-	}
-
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
 	public static final String DIFFICULTY = "DIFFICULTY";
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
@@ -160,7 +132,7 @@ public final class DefaultGameRules {
 			}
 		}
 
-		worldInfo.gameRules = new DGGameRules(worldInfo.gameRules, forced);
+		worldInfo.gameRules = new RCGameRules(worldInfo.gameRules, forced);
 	}
 
 	public static void create() throws IOException {
