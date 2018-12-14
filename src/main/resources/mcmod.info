@@ -2,7 +2,7 @@
 	{
 		"modid": "randomconfigs",
 		"name": "RandomConfigs",
-		"description": "",
+		"description": "A utility mod for setting default configurations, gamerules, difficulties and world borders.",
 		"version": "${version}",
 		"mcversion": "${mcversion}",
 		"url": "https://minecraft.curseforge.com/projects/randomconfigs",
