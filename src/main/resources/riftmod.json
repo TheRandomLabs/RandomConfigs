@@ -5,7 +5,6 @@
 		"TheRandomLabs"
 	],
 	"listeners": [
-		"com.therandomlabs.randomconfigs.DefaultGameRules",
 		"com.therandomlabs.randomconfigs.RandomConfigs"
 	]
 }
