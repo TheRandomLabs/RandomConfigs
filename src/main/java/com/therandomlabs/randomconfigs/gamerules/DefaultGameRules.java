@@ -15,18 +15,18 @@ import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
-import com.therandomlabs.randomconfigs.api.listener.CreateSpawnPositionListener;
-import com.therandomlabs.randomconfigs.api.listener.WorldLoadListener;
+import com.therandomlabs.randomconfigs.api.event.WorldEvent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.EnumDifficulty;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.GameType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.level.LevelProperties;
 
-public final class DefaultGameRules implements CreateSpawnPositionListener, WorldLoadListener {
+public final class DefaultGameRules implements
+		WorldEvent.Initialize, WorldEvent.CreateSpawnPosition {
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
 	public static final String DIFFICULTY = "DIFFICULTY";
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
@@ -39,47 +39,66 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 			)
 	);
 
-	private static final Field WORLD_INFO = RandomConfigs.findField(World.class, "worldInfo", "y");
+	private static final Field LEVEL_PROPERTIES =
+			RandomConfigs.findField(World.class, "properties", "y");
 	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
-			RandomConfigs.findField(WorldInfo.class, "gameRules", "V")
+			RandomConfigs.findField(LevelProperties.class, "gameRules", "V")
 	);
 
-	private static List<DefaultGameRule> cachedDefaultGameRules;
+	private static List<DefaultGameRule> defaultGameRules;
 
 	@Override
-	public void onCreateSpawnPosition(WorldServer world) {
+	public void onInitialize(ServerWorld world) {
+		defaultGameRules = get(world);
+
+		try {
+			final MinecraftServer server = world.getServer();
+			final LevelProperties properties = (LevelProperties) LEVEL_PROPERTIES.get(world);
+			final GameRules gamerules = (GameRules) GAME_RULES.get(properties);
+
+			final Set<String> forced = new HashSet<>();
+
+			for(DefaultGameRule rule : defaultGameRules) {
+				if(!rule.forced || rule.key.equals(DIFFICULTY) ||
+						rule.key.equals(WORLD_BORDER_SIZE)) {
+					continue;
+				}
+
+				forced.add(rule.key);
+				gamerules.put(rule.key, rule.value, server);
+			}
+
+			GAME_RULES.set(properties, new RCGameRules(server, gamerules, forced));
+		} catch(Exception ex) {
+			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
+		}
+	}
+
+	@Override
+	public void onCreateSpawnPosition(ServerWorld world) {
 		if(world.dimension.getType() != DimensionType.OVERWORLD) {
 			return;
 		}
 
-		WorldInfo worldInfo = null;
+		LevelProperties properties = null;
 
 		try {
-			worldInfo = (WorldInfo) WORLD_INFO.get(world);
+			properties = (LevelProperties) LEVEL_PROPERTIES.get(world);
 		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to retrieve world info", ex);
+			RandomConfigs.crashReport("Failed to retrieve level properties", ex);
 		}
 
-		final int gamemode = worldInfo.getGameType().getID();
-		final String type = world.getWorldType().getName();
-
-		List<DefaultGameRule> defaultGameRules = null;
-
-		try {
-			defaultGameRules = get(gamemode, type);
-		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to read default gamerules", ex);
+		if(defaultGameRules == null) {
+			defaultGameRules = get(world);
 		}
-
-		cachedDefaultGameRules = defaultGameRules;
 
 		for(DefaultGameRule rule : defaultGameRules) {
 			if(rule.key.equals(DIFFICULTY)) {
 				try {
-					worldInfo.setDifficulty(
-							EnumDifficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
+					properties.setDifficulty(
+							Difficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
 					);
-					worldInfo.setDifficultyLocked(rule.forced);
+					properties.setDifficultyLocked(rule.forced);
 				} catch(IllegalArgumentException ex) {
 					RandomConfigs.LOGGER.error("Invalid difficulty: " + rule.value);
 				}
@@ -97,51 +116,10 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 				continue;
 			}
 
-			worldInfo.getGameRulesInstance().setOrCreateGameRule(
-					rule.key, rule.value, world.getServer()
-			);
-		}
-	}
-
-	@Override
-	public void onWorldLoad(WorldServer world) {
-		List<DefaultGameRule> defaultGameRules = null;
-
-		if(cachedDefaultGameRules != null) {
-			defaultGameRules = cachedDefaultGameRules;
-			cachedDefaultGameRules = null;
-		} else {
-			final int gamemode = world.getWorldInfo().getGameType().getID();
-			final String type = world.getWorldType().getName();
-
-			try {
-				defaultGameRules = get(gamemode, type);
-			} catch(Exception ex) {
-				RandomConfigs.crashReport("Failed to read default gamerules", ex);
-			}
+			properties.getGameRules().put(rule.key, rule.value, world.getServer());
 		}
 
-		try {
-			final MinecraftServer server = world.getServer();
-			final WorldInfo worldInfo = (WorldInfo) WORLD_INFO.get(world);
-			final GameRules gamerules = (GameRules) GAME_RULES.get(worldInfo);
-
-			final Set<String> forced = new HashSet<>();
-
-			for(DefaultGameRule rule : defaultGameRules) {
-				if(!rule.forced || rule.key.equals(DIFFICULTY) ||
-						rule.key.equals(WORLD_BORDER_SIZE)) {
-					continue;
-				}
-
-				forced.add(rule.key);
-				gamerules.setOrCreateGameRule(rule.key, rule.value, server);
-			}
-
-			GAME_RULES.set(worldInfo, new RCGameRules(server, gamerules, forced));
-		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
-		}
+		defaultGameRules = null;
 	}
 
 	public static void create() throws IOException {
@@ -219,7 +197,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 	}
 
 	private static boolean matches(String key, int gamemode, String worldType) {
-		final GameType gameType = GameType.getByID(gamemode);
+		final GameMode gameType = GameMode.byId(gamemode);
 		final String[] split = key.split(":");
 
 		if(!split[0].isEmpty()) {
@@ -227,7 +205,7 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 			boolean gamemodeFound = false;
 
 			for(String mode : gamemodes) {
-				if(GameType.parseGameTypeWithDefault(mode, null) == gameType) {
+				if(GameMode.byName(mode, null) == gameType) {
 					gamemodeFound = true;
 					break;
 				}
@@ -292,5 +270,18 @@ public final class DefaultGameRules implements CreateSpawnPositionListener, Worl
 				((JsonPrimitive) value).asString(),
 				(boolean) ((JsonPrimitive) forced).getValue()
 		);
+	}
+
+	private static List<DefaultGameRule> get(World world) {
+		try {
+			return get(
+					world.getLevelProperties().getGameMode().getId(),
+					world.getGeneratorType().getName()
+			);
+		} catch(Exception ex) {
+			RandomConfigs.crashReport("Failed to read default gamerules", ex);
+		}
+
+		return null;
 	}
 }

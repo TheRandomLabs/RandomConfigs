@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"compatibilityLevel": "JAVA_8",
+	"package": "com.therandomlabs.randomconfigs.mixin",
+	"mixins": [
+		"MixinServerWorld"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

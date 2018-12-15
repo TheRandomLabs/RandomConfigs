@@ -1,0 +1,14 @@
+{
+	"id": "randomconfigs",
+	"name": "RandomConfigs",
+	"description": "A utility mod for setting default configurations, gamerules, difficulties and world borders.",
+	"version": "1.14-1.2.0.1-fabric",
+	"side": "universal",
+	"initializer": "com.therandomlabs.randomconfigs.RandomConfigs",
+	"requires": {
+		"fabric": "*"
+	},
+	"mixins": {
+		"common": "randomconfigs.common.json"
+	}
+}

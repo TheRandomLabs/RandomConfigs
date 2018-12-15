@@ -18,26 +18,23 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.therandomlabs.randomconfigs.api.event.WorldEvent;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
-import com.therandomlabs.randomconfigs.util.CertificateHelper;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.FabricLoader;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.riftloader.RiftLoader;
-import org.dimdev.riftloader.Side;
-import org.dimdev.riftloader.listener.InitializationListener;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.Mixins;
 
-public final class RandomConfigs implements InitializationListener {
+public final class RandomConfigs implements ModInitializer {
 	public static final String MOD_ID = "randomconfigs";
-	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
-
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
-	public static final boolean IS_CLIENT = RiftLoader.instance.getSide() == Side.CLIENT;
+	public static final boolean IS_CLIENT =
+			FabricLoader.INSTANCE.getEnvironmentHandler().getEnvironmentType() == EnvType.CLIENT;
 
 	public static final Gson GSON = new GsonBuilder().
 			setPrettyPrinting().
@@ -53,14 +50,7 @@ public final class RandomConfigs implements InitializationListener {
 	private static Field modifiers;
 
 	@Override
-	public void onInitialization() {
-		if(!verifyFingerprint()) {
-			LOGGER.error("Invalid fingerprint detected for RandomConfigs!");
-		}
-
-		MixinBootstrap.init();
-		Mixins.addConfiguration("mixins." + MOD_ID + ".json");
-
+	public void onInitialize() {
 		try {
 			DefaultConfigs.handle();
 		} catch(IOException ex) {
@@ -72,6 +62,11 @@ public final class RandomConfigs implements InitializationListener {
 		} catch(IOException ex) {
 			crashReport("Failed to handle default gamerules", ex);
 		}
+
+		final DefaultGameRules defaultGameRules = new DefaultGameRules();
+
+		WorldEvent.INITIALIZE.register(defaultGameRules);
+		WorldEvent.CREATE_SPAWN_POSITION.register(defaultGameRules);
 	}
 
 	public static Path getFile(String file) {
@@ -186,7 +181,7 @@ public final class RandomConfigs implements InitializationListener {
 	}
 
 	public static void crashReport(String message, Exception ex) {
-		throw new ReportedException(new CrashReport(message, ex));
+		throw new CrashException(new CrashReport(message, ex));
 	}
 
 	public static Field findField(Class<?> clazz, String name, String obfName) {
@@ -213,19 +208,5 @@ public final class RandomConfigs implements InitializationListener {
 		}
 
 		return field;
-	}
-
-	private static boolean verifyFingerprint() {
-		final List<String> fingerprints = CertificateHelper.getFingerprints(
-				RandomConfigs.class.getProtectionDomain().getCodeSource().getCertificates()
-		);
-
-		for(String fingerprint : fingerprints) {
-			if(CERTIFICATE_FINGERPRINT.equals(fingerprint)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

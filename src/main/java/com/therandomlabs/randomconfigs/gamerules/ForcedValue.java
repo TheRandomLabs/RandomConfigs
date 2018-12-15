@@ -8,9 +8,9 @@ public class ForcedValue extends GameRules.Value {
 	public ForcedValue(String key, GameRules.Value value,
 			BiConsumer<MinecraftServer, GameRules.Value> consumer, MinecraftServer server) {
 		super(key, value.getType(), consumer);
-		super.setValue(value.getString(), server);
+		super.set(value.getString(), server);
 	}
 
 	@Override
-	public void setValue(String value, MinecraftServer server) {}
+	public void set(String value, MinecraftServer server) {}
 }
