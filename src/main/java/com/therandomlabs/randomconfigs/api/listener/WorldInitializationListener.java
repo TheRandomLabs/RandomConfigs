@@ -2,6 +2,6 @@ package com.therandomlabs.randomconfigs.api.listener;
 
 import net.minecraft.world.WorldServer;
 
-public interface WorldLoadListener {
-	void onWorldLoad(WorldServer world);
+public interface WorldInitializationListener {
+	void onInitialize(WorldServer world);
 }

@@ -15,10 +15,8 @@ public class RCGameRules extends GameRules {
 	@SuppressWarnings("unchecked")
 	public RCGameRules(MinecraftServer server, GameRules rules, Set<String> forced)
 			throws IllegalAccessException {
-		final Map<String, Value> localRules =
-				(Map<String, Value>) RULES.get(this);
-		final Map<String, Value> originalRules =
-				(Map<String, Value>) RULES.get(rules);
+		final Map<String, Value> localRules = (Map<String, Value>) RULES.get(this);
+		final Map<String, Value> originalRules = (Map<String, Value>) RULES.get(rules);
 
 		localRules.clear();
 		localRules.putAll(originalRules);
