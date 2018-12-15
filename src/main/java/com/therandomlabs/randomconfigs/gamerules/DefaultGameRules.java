@@ -37,7 +37,7 @@ public final class DefaultGameRules {
 			)
 	);
 
-	private static List<DefaultGameRule> cachedDefaultGameRules;
+	private static List<DefaultGameRule> defaultGameRules;
 
 	@SubscribeEvent
 	public static void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
@@ -47,19 +47,9 @@ public final class DefaultGameRules {
 			return;
 		}
 
+		defaultGameRules = get(world);
+
 		final WorldInfo worldInfo = world.getWorldInfo();
-		final int gamemode = worldInfo.getGameType().getID();
-		final String type = world.getWorldType().getName();
-
-		List<DefaultGameRule> defaultGameRules = null;
-
-		try {
-			defaultGameRules = get(gamemode, type);
-		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to read default gamerules", ex);
-		}
-
-		cachedDefaultGameRules = defaultGameRules;
 
 		for(DefaultGameRule rule : defaultGameRules) {
 			if(rule.key.equals(DIFFICULTY)) {
@@ -97,23 +87,11 @@ public final class DefaultGameRules {
 			return;
 		}
 
-		final WorldInfo worldInfo = world.getWorldInfo();
-		List<DefaultGameRule> defaultGameRules = null;
-
-		if(cachedDefaultGameRules != null) {
-			defaultGameRules = cachedDefaultGameRules;
-			cachedDefaultGameRules = null;
-		} else {
-			final int gamemode = worldInfo.getGameType().getID();
-			final String type = world.getWorldType().getName();
-
-			try {
-				defaultGameRules = get(gamemode, type);
-			} catch(Exception ex) {
-				RandomConfigs.crashReport("Failed to read default gamerules", ex);
-			}
+		if(defaultGameRules == null) {
+			defaultGameRules = get(world);
 		}
 
+		final WorldInfo worldInfo = world.getWorldInfo();
 		final Set<String> forced = new HashSet<>();
 
 		for(DefaultGameRule rule : defaultGameRules) {
@@ -282,5 +260,18 @@ public final class DefaultGameRules {
 				((JsonPrimitive) value).asString(),
 				(boolean) ((JsonPrimitive) forced).getValue()
 		);
+	}
+
+	private static List<DefaultGameRule> get(World world) {
+		try {
+			return get(
+					world.getWorldInfo().getGameType().getID(),
+					world.getWorldType().getName()
+			);
+		} catch(Exception ex) {
+			RandomConfigs.crashReport("Failed to read default gamerules", ex);
+		}
+
+		return null;
 	}
 }
