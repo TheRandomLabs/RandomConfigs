@@ -111,6 +111,7 @@ public final class DefaultGameRules {
 		}
 
 		worldInfo.gameRules = new RCGameRules(worldInfo.gameRules, forced);
+		defaultGameRules = null;
 	}
 
 	public static void create() throws IOException {
