@@ -1,10 +1,13 @@
 {
 	"id": "randomconfigs",
 	"name": "RandomConfigs",
+	"version": "1.13.2-1.2.0.2-Rift",
 	"authors": [
 		"TheRandomLabs"
 	],
 	"listeners": [
 		"com.therandomlabs.randomconfigs.RandomConfigs"
-	]
+	],
+	"url": "https://minecraft.curseforge.com/projects/randomconfigs",
+	"description": "A utility mod for setting default configurations, gamerules, difficulties and world borders."
 }
