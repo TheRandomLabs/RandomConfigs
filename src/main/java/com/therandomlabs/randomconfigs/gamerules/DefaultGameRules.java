@@ -40,9 +40,9 @@ public final class DefaultGameRules implements
 	);
 
 	private static final Field LEVEL_PROPERTIES =
-			RandomConfigs.findField(World.class, "properties", "y");
+			RandomConfigs.findField(World.class, "properties", "field_9232");
 	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
-			RandomConfigs.findField(LevelProperties.class, "gameRules", "V")
+			RandomConfigs.findField(LevelProperties.class, "gameRules", "field_154")
 	);
 
 	private static List<DefaultGameRule> defaultGameRules;

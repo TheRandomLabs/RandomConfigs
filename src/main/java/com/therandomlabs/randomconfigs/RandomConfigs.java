@@ -25,6 +25,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.FabricLoader;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.level.LevelProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -186,7 +188,9 @@ public final class RandomConfigs implements ModInitializer {
 
 	public static Field findField(Class<?> clazz, String name, String obfName) {
 		for(Field field : clazz.getDeclaredFields()) {
-			if(name.equals(field.getName()) || obfName.equals(field.getName())) {
+			final String fieldName = field.getName();
+
+			if(name.equals(fieldName) || obfName.equals(fieldName)) {
 				field.setAccessible(true);
 				return field;
 			}
