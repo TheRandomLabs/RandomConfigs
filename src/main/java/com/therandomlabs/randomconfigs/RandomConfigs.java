@@ -25,8 +25,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.FabricLoader;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
