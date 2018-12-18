@@ -6,7 +6,8 @@
 		"TheRandomLabs"
 	],
 	"listeners": [
-		"com.therandomlabs.randomconfigs.RandomConfigs"
+		"com.therandomlabs.randomconfigs.RandomConfigs",
+		"com.therandomlabs.randomconfigs.gamerules.DefaultGameRulesHandler"
 	],
 	"url": "https://minecraft.curseforge.com/projects/randomconfigs",
 	"description": "A utility mod for setting default configurations, gamerules, difficulties and world borders."
