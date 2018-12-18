@@ -75,7 +75,7 @@ public final class DefaultConfigs {
 		final Path source = RandomConfigs.getConfig("defaultconfigs/" + config.source);
 		final Path destination = RandomConfigs.getFile(config.destination);
 
-		if(config.version != oldVersion || !destination.toFile().exists()) {
+		if(config.version != oldVersion || !Files.exists(destination)) {
 			Files.createDirectories(destination.getParent());
 			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}
