@@ -1,32 +1,20 @@
 package com.therandomlabs.randomconfigs.gamerules;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
-import com.therandomlabs.randomconfigs.api.event.WorldEvent;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 
-public final class DefaultGameRules implements
-		WorldEvent.Initialize, WorldEvent.CreateSpawnPosition {
+public final class DefaultGameRules {
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
 	public static final String DIFFICULTY = "DIFFICULTY";
 	public static final String WORLD_BORDER_SIZE = "WORLD_BORDER_SIZE";
@@ -39,95 +27,12 @@ public final class DefaultGameRules implements
 			)
 	);
 
-	private static final Field LEVEL_PROPERTIES =
-			RandomConfigs.findField(World.class, "properties", "field_9232");
-	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
-			RandomConfigs.findField(LevelProperties.class, "gameRules", "field_154")
-	);
-
-	private static List<DefaultGameRule> defaultGameRules;
-
-	@Override
-	public void onInitialize(ServerWorld world) {
-		defaultGameRules = get(world);
-
-		try {
-			final MinecraftServer server = world.getServer();
-			final LevelProperties properties = (LevelProperties) LEVEL_PROPERTIES.get(world);
-			final GameRules gamerules = (GameRules) GAME_RULES.get(properties);
-
-			final Set<String> forced = new HashSet<>();
-
-			for(DefaultGameRule rule : defaultGameRules) {
-				if(!rule.forced || rule.key.equals(DIFFICULTY) ||
-						rule.key.equals(WORLD_BORDER_SIZE)) {
-					continue;
-				}
-
-				forced.add(rule.key);
-				gamerules.put(rule.key, rule.value, server);
-			}
-
-			GAME_RULES.set(properties, new RCGameRules(server, gamerules, forced));
-		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
-		}
-	}
-
-	@Override
-	public void onCreateSpawnPosition(ServerWorld world) {
-		if(world.dimension.getType() != DimensionType.OVERWORLD) {
-			return;
-		}
-
-		LevelProperties properties = null;
-
-		try {
-			properties = (LevelProperties) LEVEL_PROPERTIES.get(world);
-		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to retrieve level properties", ex);
-		}
-
-		if(defaultGameRules == null) {
-			defaultGameRules = get(world);
-		}
-
-		for(DefaultGameRule rule : defaultGameRules) {
-			if(rule.key.equals(DIFFICULTY)) {
-				try {
-					properties.setDifficulty(
-							Difficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
-					);
-					properties.setDifficultyLocked(rule.forced);
-				} catch(IllegalArgumentException ex) {
-					RandomConfigs.LOGGER.error("Invalid difficulty: " + rule.value);
-				}
-
-				continue;
-			}
-
-			if(rule.key.equals(WORLD_BORDER_SIZE)) {
-				try {
-					world.getWorldBorder().setSize(Integer.parseInt(rule.value));
-				} catch(NumberFormatException ex) {
-					RandomConfigs.LOGGER.error("Invalid world border size: " + rule.value);
-				}
-
-				continue;
-			}
-
-			properties.getGameRules().put(rule.key, rule.value, world.getServer());
-		}
-
-		defaultGameRules = null;
-	}
-
 	public static void create() throws IOException {
 		Files.write(JSON, DEFAULT);
 	}
 
 	public static boolean exists() {
-		return JSON.toFile().exists();
+		return Files.exists(JSON);
 	}
 
 	public static void ensureExists() throws IOException {
@@ -175,6 +80,19 @@ public final class DefaultGameRules implements
 		}
 
 		return gameRules;
+	}
+
+	public static List<DefaultGameRule> get(World world) {
+		try {
+			return get(
+					world.getLevelProperties().getGameMode().getId(),
+					world.getGeneratorType().getName()
+			);
+		} catch(Exception ex) {
+			RandomConfigs.crashReport("Failed to read default gamerules", ex);
+		}
+
+		return null;
 	}
 
 	private static void getSpecific(List<DefaultGameRule> gameRules, JsonObject json, int gamemode,
@@ -270,18 +188,5 @@ public final class DefaultGameRules implements
 				((JsonPrimitive) value).asString(),
 				(boolean) ((JsonPrimitive) forced).getValue()
 		);
-	}
-
-	private static List<DefaultGameRule> get(World world) {
-		try {
-			return get(
-					world.getLevelProperties().getGameMode().getId(),
-					world.getGeneratorType().getName()
-			);
-		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to read default gamerules", ex);
-		}
-
-		return null;
 	}
 }

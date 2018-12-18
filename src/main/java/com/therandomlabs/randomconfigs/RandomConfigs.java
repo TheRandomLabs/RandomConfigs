@@ -19,7 +19,9 @@ import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.therandomlabs.randomconfigs.api.event.WorldEvent;
+import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
+import com.therandomlabs.randomconfigs.gamerules.DefaultGameRulesHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.FabricLoader;
@@ -63,10 +65,10 @@ public final class RandomConfigs implements ModInitializer {
 			crashReport("Failed to handle default gamerules", ex);
 		}
 
-		final DefaultGameRules defaultGameRules = new DefaultGameRules();
+		final DefaultGameRulesHandler handler = new DefaultGameRulesHandler();
 
-		WorldEvent.INITIALIZE.register(defaultGameRules);
-		WorldEvent.CREATE_SPAWN_POSITION.register(defaultGameRules);
+		WorldEvent.INITIALIZE.register(handler);
+		WorldEvent.CREATE_SPAWN_POSITION.register(handler);
 	}
 
 	public static Path getFile(String file) {
