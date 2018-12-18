@@ -16,6 +16,7 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ReportedException;

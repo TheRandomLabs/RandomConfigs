@@ -119,7 +119,7 @@ public final class DefaultGameRules {
 	}
 
 	public static boolean exists() {
-		return JSON.toFile().exists();
+		return Files.exists(JSON);
 	}
 
 	public static void ensureExists() throws IOException {
