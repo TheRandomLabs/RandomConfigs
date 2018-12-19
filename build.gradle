@@ -19,7 +19,7 @@ apply plugin: "fabric-loom"
 apply plugin: "com.github.johnrengelman.shadow"
 
 archivesBaseName = "randomconfigs"
-version = "1.14-1.2.0.2-fabric"
+version = "1.14-1.2.0.3-fabric"
 
 sourceCompatibility = targetCompatibility = "1.8"
 
