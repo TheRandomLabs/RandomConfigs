@@ -1,6 +1,6 @@
 package com.therandomlabs.randomconfigs.api.event;
 
-import net.fabricmc.fabric.util.HandlerList;
+import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.server.world.ServerWorld;
 
 public final class WorldEvent {
@@ -14,7 +14,7 @@ public final class WorldEvent {
 		void onCreateSpawnPosition(ServerWorld world);
 	}
 
-	public static final HandlerList<Initialize> INITIALIZE = new HandlerList<>(Initialize.class);
-	public static final HandlerList<CreateSpawnPosition> CREATE_SPAWN_POSITION =
-			new HandlerList<>(CreateSpawnPosition.class);
+	public static final HandlerArray<Initialize> INITIALIZE = new HandlerArray<>(Initialize.class);
+	public static final HandlerArray<CreateSpawnPosition> CREATE_SPAWN_POSITION =
+			new HandlerArray<>(CreateSpawnPosition.class);
 }
