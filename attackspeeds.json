@@ -1,0 +1,26 @@
+{
+	"attackSpeeds": {
+		//Registry name
+		"minecraft:iron_sword": {
+			//Attack speed (from 0.0 to 1024.0)
+			"speed": 3.0,
+			//Whether attacks should be disabled during the attack cooldown
+			//The attack cooldown will reset when an attack is attempted during the cooldown
+			"disableAttacksDuringAttackCooldown": true
+		},
+		"minecraft:diamond_sword": {
+			"speed": 10.0,
+			"disableAttacksDuringAttackCooldown": false
+		}
+	},
+	//Overrides RandomTweaks' attack speed configuration option
+	"defaultAttackSpeed": 4.0,
+	//Overrides RandomTweaks' "misc.disableAttacksDuringAttackCooldown" option
+	"disableAttacksDuringAttackCooldownByDefault": false,
+	//Whether to enable the /asreload command, which reloads this configuration
+	"asreloadCommand": true,
+	//Whether to enable the client-sided /asreloadclient command
+	"asreloadclientCommand": true,
+	//Whether the options in this JSON should take effect (excluding the command toggles)
+	"enabled": true
+}

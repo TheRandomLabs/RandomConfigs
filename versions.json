@@ -1,6 +1,7 @@
 {
 	"homepage": "https://minecraft.curseforge.com/projects/randomconfigs",
 	"1.12.2": {
+		"1.12.2-1.3.0.0": "The default gamerules JSON is now reformatted every time it is read.\nAttack speeds are now configurable for each item.",
 		"1.12.2-1.2.0.2": "Updated mcmod.info",
 		"1.12.2-1.2.0.0": "Added default difficulties.\nFixed string gamerules.",
 		"1.12.2-1.1.2.3": "Disabled HTML escaping in JSONs.",
@@ -18,6 +19,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.12.1": {
+		"1.12.2-1.3.0.0": "The default gamerules JSON is now reformatted every time it is read.\nAttack speeds are now configurable for each item.",
 		"1.12.2-1.2.0.2": "Updated mcmod.info",
 		"1.12.2-1.2.0.0": "Added default difficulties.\nFixed string gamerules.",
 		"1.12.2-1.1.2.3": "Disabled HTML escaping in JSONs.",
@@ -35,6 +37,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.12": {
+		"1.12.2-1.3.0.0": "The default gamerules JSON is now reformatted every time it is read.\nAttack speeds are now configurable for each item.",
 		"1.12.2-1.2.0.2": "Updated mcmod.info",
 		"1.12.2-1.2.0.0": "Added default difficulties.\nFixed string gamerules.",
 		"1.12.2-1.1.2.3": "Disabled HTML escaping in JSONs.",
@@ -52,6 +55,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.11.2": {
+		"1.12.2-1.3.0.0": "The default gamerules JSON is now reformatted every time it is read.\nAttack speeds are now configurable for each item.",
 		"1.12.2-1.2.0.2": "Updated mcmod.info",
 		"1.12.2-1.2.0.0": "Added default difficulties.\nFixed string gamerules.",
 		"1.12.2-1.1.2.3": "Disabled HTML escaping in JSONs.",
@@ -69,6 +73,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.11": {
+		"1.12.2-1.3.0.0": "The default gamerules JSON is now reformatted every time it is read.\nAttack speeds are now configurable for each item.",
 		"1.12.2-1.2.0.2": "Updated mcmod.info",
 		"1.12.2-1.2.0.0": "Added default difficulties.\nFixed string gamerules.",
 		"1.12.2-1.1.2.3": "Disabled HTML escaping in JSONs.",
@@ -86,6 +91,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.10.2": {
+		"1.12.2-1.3.0.0": "The default gamerules JSON is now reformatted every time it is read.\nAttack speeds are now configurable for each item.",
 		"1.12.2-1.2.0.2": "Updated mcmod.info",
 		"1.12.2-1.2.0.0": "Added default difficulties.\nFixed string gamerules.",
 		"1.12.2-1.1.2.3": "Disabled HTML escaping in JSONs.",
@@ -103,6 +109,7 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"1.10": {
+		"1.12.2-1.3.0.0": "The default gamerules JSON is now reformatted every time it is read.\nAttack speeds are now configurable for each item.",
 		"1.12.2-1.2.0.2": "Updated mcmod.info",
 		"1.12.2-1.2.0.0": "Added default difficulties.\nFixed string gamerules.",
 		"1.12.2-1.1.2.3": "Disabled HTML escaping in JSONs.",
@@ -120,15 +127,15 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"promos": {
-		"1.12.2-latest": "1.12.2-1.2.0.2",
-		"1.12.2-recommended": "1.12.2-1.2.0.2",
-		"1.12.1-latest": "1.12.2-1.2.0.2",
-		"1.12.1-recommended": "1.12.2-1.2.0.2",
-		"1.12-latest": "1.12.2-1.2.0.2",
-		"1.12-recommended": "1.12.2-1.2.0.2",
-		"1.11.2-latest": "1.12.2-1.2.0.2",
-		"1.11-recommended": "1.12.2-1.2.0.2",
-		"1.10.2-latest": "1.12.2-1.2.0.2",
-		"1.10-recommended": "1.12.2-1.2.0.2"
+		"1.12.2-latest": "1.12.2-1.3.0.0",
+		"1.12.2-recommended": "1.12.2-1.3.0.0",
+		"1.12.1-latest": "1.12.2-1.3.0.0",
+		"1.12.1-recommended": "1.12.2-1.3.0.0",
+		"1.12-latest": "1.12.2-1.3.0.0",
+		"1.12-recommended": "1.12.2-1.3.0.0",
+		"1.11.2-latest": "1.12.2-1.3.0.0",
+		"1.11-recommended": "1.12.2-1.3.0.0",
+		"1.10.2-latest": "1.12.2-1.3.0.0",
+		"1.10-recommended": "1.12.2-1.3.0.0"
 	}
 }
