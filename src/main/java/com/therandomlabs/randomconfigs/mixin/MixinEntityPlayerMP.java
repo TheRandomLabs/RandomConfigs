@@ -26,6 +26,7 @@ public class MixinEntityPlayerMP {
 				RiftLoader.instance.getListeners(PlayerAttackEntityListener.class)) {
 			if(!listener.onPlayerAttackEntity((EntityPlayerMP) (Object) this, target)) {
 				callback.cancel();
+				break;
 			}
 		}
 	}
