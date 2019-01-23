@@ -20,7 +20,7 @@ public class MixinEntityPlayerMP {
 		}
 	}
 
-	@Inject(method = "attackTargetEntityWithCurrentItem", at = @At("HEAD"))
+	@Inject(method = "attackTargetEntityWithCurrentItem", at = @At("HEAD"), cancellable = true)
 	public void attackTargetEntityWithCurrentItem(Entity target, CallbackInfo callback) {
 		for(PlayerAttackEntityListener listener :
 				RiftLoader.instance.getListeners(PlayerAttackEntityListener.class)) {
