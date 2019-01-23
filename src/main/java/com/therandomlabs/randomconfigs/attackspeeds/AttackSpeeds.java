@@ -8,7 +8,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -60,7 +62,9 @@ public final class AttackSpeeds {
 		}
 
 		final EntityPlayer player = (EntityPlayer) entity;
-		final Item item = player.getHeldItem(player.getActiveHand()).getItem();
+		final ItemStack stack = player.getHeldItem(player.getActiveHand());
+		//1.10 compatibility
+		final Item item = stack == null ? Items.AIR : stack.getItem();
 
 		final IAttributeInstance attackSpeed =
 				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);

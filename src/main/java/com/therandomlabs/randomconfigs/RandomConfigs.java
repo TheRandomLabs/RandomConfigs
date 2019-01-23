@@ -29,7 +29,6 @@ import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,9 +52,6 @@ public final class RandomConfigs {
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	public static final boolean IS_CLIENT = FMLCommonHandler.instance().getSide().isClient();
-
-	public static final String MC_VERSION_STRING = (String) FMLInjectionData.data()[4];
-	public static final int MC_VERSION = Integer.parseInt(MC_VERSION_STRING.split("\\.")[1]);
 
 	public static final boolean RANDOMTWEAKS_LOADED = Loader.isModLoaded("randomtweaks");
 
@@ -84,34 +80,28 @@ public final class RandomConfigs {
 			crashReport("Failed to load default gamerules", ex);
 		}
 
-		if(MC_VERSION > 11) {
-			try {
-				AttackSpeeds.reload();
-			} catch(IOException ex) {
-				crashReport("Failed to load attack speeds", ex);
-			}
+		try {
+			AttackSpeeds.reload();
+		} catch(IOException ex) {
+			crashReport("Failed to load attack speeds", ex);
 		}
 	}
 
 	@Mod.EventHandler
 	public static void preInit(FMLPreInitializationEvent event) {
-		if(MC_VERSION > 11 && event.getSide().isClient()) {
+		if(event.getSide().isClient()) {
 			AttackSpeeds.registerClientCommand();
 		}
 	}
 
 	@Mod.EventHandler
 	public static void init(FMLInitializationEvent event) {
-		if(MC_VERSION > 11) {
-			MinecraftForge.EVENT_BUS.register(AttackSpeeds.class);
-		}
+		MinecraftForge.EVENT_BUS.register(AttackSpeeds.class);
 	}
 
 	@Mod.EventHandler
 	public static void serverStarting(FMLServerStartingEvent event) {
-		if(MC_VERSION > 11) {
-			AttackSpeeds.registerCommand(event);
-		}
+		AttackSpeeds.registerCommand(event);
 	}
 
 	public static Path getFile(String file) {
