@@ -31,7 +31,7 @@ public class CommandASReload extends CommandBase {
 			throws CommandException {
 		final boolean isServer = server != null && server.isDedicatedServer();
 
-		try{
+		try {
 			AttackSpeeds.reload();
 		} catch(IOException ex) {
 			RandomConfigs.LOGGER.error("Failed to reload attack speed configuration", ex);
