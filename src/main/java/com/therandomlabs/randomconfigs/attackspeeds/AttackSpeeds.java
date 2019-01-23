@@ -37,11 +37,9 @@ public final class AttackSpeeds {
 			return;
 		}
 
-		final EntityPlayer player = (EntityPlayer) entity;
-
 		//We don't need to apply potion attributes here because it's done automatically
 		final IAttributeInstance attackSpeed =
-				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+				((EntityPlayer) entity).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
 
 		//If configurable attack speeds are disabled, set it to the vanilla default of 4.0
 		//unless RandomTweaks is installed (see above if statement) since RandomTweaks
