@@ -37,7 +37,6 @@ public final class AttackSpeeds
 			}
 		}
 
-		//We don't need to apply potion attributes here because it's done automatically
 		final EntityAttributeInstance attackSpeed =
 				((PlayerEntity) entity).getAttributeInstance(EntityAttributes.ATTACK_SPEED);
 
