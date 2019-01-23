@@ -37,7 +37,7 @@ public final class AttackSpeeds {
 			return;
 		}
 
-		final EntityPlayer player = (EntityPlayer) event.getEntity();
+		final EntityPlayer player = (EntityPlayer) entity;
 
 		//We don't need to apply potion attributes here because it's done automatically
 		final IAttributeInstance attackSpeed =
