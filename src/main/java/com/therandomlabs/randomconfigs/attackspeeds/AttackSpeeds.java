@@ -39,7 +39,6 @@ public final class AttackSpeeds {
 			return;
 		}
 
-		//We don't need to apply potion attributes here because it's done automatically
 		final IAttributeInstance attackSpeed =
 				((EntityPlayer) entity).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
 
