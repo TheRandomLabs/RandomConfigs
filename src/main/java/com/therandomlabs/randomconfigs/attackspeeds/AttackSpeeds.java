@@ -24,6 +24,7 @@ public final class AttackSpeeds
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 
 	private static AttackSpeedConfig speeds = new AttackSpeedConfig();
+	private static boolean reloaded;
 
 	@Override
 	public void registerCommands(CommandDispatcher<CommandSource> dispatcher) {
@@ -36,6 +37,15 @@ public final class AttackSpeeds
 	public void onEntityAdded(WorldServer world, Entity entity) {
 		if(!(entity instanceof EntityPlayer)) {
 			return;
+		}
+
+		if(!reloaded) {
+			try {
+				reload();
+				reloaded = true;
+			} catch(IOException ex) {
+				RandomConfigs.crashReport("Failed to load attack speeds", ex);
+			}
 		}
 
 		//We don't need to apply potion attributes here because it's done automatically
