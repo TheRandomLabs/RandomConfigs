@@ -6,6 +6,7 @@
 	"package": "com.therandomlabs.randomconfigs.mixin",
 	"refmap": "mixins.randomconfigs.refmap.json",
 	"mixins": [
+		"MixinEntityPlayerMP",
 		"MixinWorldServer"
 	],
 	"client": []

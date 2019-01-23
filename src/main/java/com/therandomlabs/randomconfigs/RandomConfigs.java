@@ -18,14 +18,18 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.brigadier.CommandDispatcher;
+import com.therandomlabs.randomconfigs.attackspeeds.AttackSpeeds;
 import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import com.therandomlabs.randomconfigs.util.CertificateHelper;
+import net.minecraft.command.CommandSource;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ReportedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.rift.listener.CommandAdder;
 import org.dimdev.riftloader.RiftLoader;
 import org.dimdev.riftloader.Side;
 import org.dimdev.riftloader.listener.InitializationListener;
@@ -71,7 +75,13 @@ public final class RandomConfigs implements InitializationListener {
 		try {
 			DefaultGameRules.ensureExists();
 		} catch(IOException ex) {
-			crashReport("Failed to handle default gamerules", ex);
+			crashReport("Failed to load default gamerules", ex);
+		}
+
+		try {
+			AttackSpeeds.reload();
+		} catch(IOException ex) {
+			crashReport("Failed to load attack speeds", ex);
 		}
 	}
 

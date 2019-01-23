@@ -1,12 +1,13 @@
 {
 	"id": "randomconfigs",
 	"name": "RandomConfigs",
-	"version": "1.13-1.2.0.2-Rift",
+	"version": "1.13-1.3.0.0-Rift",
 	"authors": [
 		"TheRandomLabs"
 	],
 	"listeners": [
 		"com.therandomlabs.randomconfigs.RandomConfigs",
+		"com.therandomlabs.randomconfigs.attackspeeds.AttackSpeeds",
 		"com.therandomlabs.randomconfigs.gamerules.DefaultGameRulesHandler"
 	],
 	"url": "https://minecraft.curseforge.com/projects/randomconfigs",

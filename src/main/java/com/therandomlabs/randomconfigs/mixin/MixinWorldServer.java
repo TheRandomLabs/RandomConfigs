@@ -1,7 +1,9 @@
 package com.therandomlabs.randomconfigs.mixin;
 
 import com.therandomlabs.randomconfigs.api.listener.CreateSpawnPositionListener;
+import com.therandomlabs.randomconfigs.api.listener.EntityAddedListener;
 import com.therandomlabs.randomconfigs.api.listener.WorldInitializationListener;
+import net.minecraft.entity.Entity;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 import org.dimdev.riftloader.RiftLoader;
@@ -28,6 +30,14 @@ public class MixinWorldServer {
 		for(CreateSpawnPositionListener listener :
 				RiftLoader.instance.getListeners(CreateSpawnPositionListener.class)) {
 			listener.onCreateSpawnPosition((WorldServer) (Object) this);
+		}
+	}
+
+	@Inject(method = "onEntityAdded", at = @At("TAIL"))
+	public void onEntityAdded(Entity entity, CallbackInfo callback) {
+		for(EntityAddedListener listener :
+				RiftLoader.instance.getListeners(EntityAddedListener.class)) {
+			listener.onEntityAdded((WorldServer) (Object) this, entity);
 		}
 	}
 }
