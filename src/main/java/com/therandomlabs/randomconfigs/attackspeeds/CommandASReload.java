@@ -24,6 +24,10 @@ public class CommandASReload extends CommandBase {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
+		if(RandomConfigs.MC_VERSION == 10) {
+			return isClient ? "/asreloadclient" : "/asreload";
+		}
+
 		return isClient ? "commands.asreloadclient.usage" : "/asreload";
 	}
 
