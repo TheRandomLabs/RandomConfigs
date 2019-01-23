@@ -29,7 +29,7 @@ public final class AttackSpeeds
 	@Override
 	public void registerCommands(CommandDispatcher<CommandSource> dispatcher) {
 		if(speeds.asreloadCommand) {
-			CommandASReload.register(dispatcher);
+			ASReloadCommand.register(dispatcher);
 		}
 	}
 
