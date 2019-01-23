@@ -6,6 +6,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -42,13 +43,26 @@ public class CommandASReload extends CommandBase {
 				);
 			}
 
+			if(RandomConfigs.MC_VERSION == 10) {
+				throw new CommandException(
+						"Failed to reload client-sided attack speed configuration: " +
+								ex.getMessage()
+				);
+			}
+
 			throw new CommandException("commands.asreloadclient.failure", ex.getMessage());
 		}
 
 		if(isServer) {
 			notifyCommandListener(sender, this, "Attack speed configuration reloaded!");
 		} else {
-			sender.sendMessage(new TextComponentTranslation("commands.asreloadclient.success"));
+			if(RandomConfigs.MC_VERSION == 10) {
+				sender.sendMessage(new TextComponentString(
+						"Client-sided attack speed configuration reloaded!"
+				));
+			} else {
+				sender.sendMessage(new TextComponentTranslation("commands.asreloadclient.success"));
+			}
 		}
 	}
 

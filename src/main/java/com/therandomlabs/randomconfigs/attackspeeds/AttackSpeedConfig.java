@@ -15,11 +15,6 @@ public final class AttackSpeedConfig {
 
 	public transient Map<Item, ItemAttackSpeed> itemAttackSpeeds;
 
-	public AttackSpeedConfig() {
-		//Use the Knowledge Book as an example since it isn't used by anything
-		attackSpeeds.put("minecraft:knowledge_book", new ItemAttackSpeed());
-	}
-
 	public void ensureCorrect() {
 		final Map<String, ItemAttackSpeed> newAttackSpeeds = new HashMap<>(attackSpeeds.size());
 		itemAttackSpeeds = new HashMap<>(attackSpeeds.size());
