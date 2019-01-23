@@ -1,6 +1,7 @@
 package com.therandomlabs.randomconfigs.mixin;
 
 import com.therandomlabs.randomconfigs.api.event.WorldEvent;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.level.LevelInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,6 +26,13 @@ public class MixinServerWorld {
 		for(WorldEvent.CreateSpawnPosition event :
 				WorldEvent.CREATE_SPAWN_POSITION.getBackingArray()) {
 			event.onCreateSpawnPosition((ServerWorld) (Object) this);
+		}
+	}
+
+	@Inject(method = "onEntityAdded", at = @At("TAIL"))
+	public void onEntityAdded(Entity entity, CallbackInfo callback) {
+		for(WorldEvent.EntityAdded event : WorldEvent.ENTITY_ADDED.getBackingArray()) {
+			event.onEntityAdded((ServerWorld) (Object) this, entity);
 		}
 	}
 }

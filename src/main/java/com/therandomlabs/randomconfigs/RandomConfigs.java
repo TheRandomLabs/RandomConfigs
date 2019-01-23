@@ -18,7 +18,9 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.therandomlabs.randomconfigs.api.event.PlayerEvent;
 import com.therandomlabs.randomconfigs.api.event.WorldEvent;
+import com.therandomlabs.randomconfigs.attackspeeds.AttackSpeeds;
 import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRulesHandler;
@@ -62,13 +64,21 @@ public final class RandomConfigs implements ModInitializer {
 		try {
 			DefaultGameRules.ensureExists();
 		} catch(IOException ex) {
-			crashReport("Failed to handle default gamerules", ex);
+			crashReport("Failed to load default gamerules", ex);
 		}
 
 		final DefaultGameRulesHandler handler = new DefaultGameRulesHandler();
 
 		WorldEvent.INITIALIZE.register(handler);
 		WorldEvent.CREATE_SPAWN_POSITION.register(handler);
+
+		final AttackSpeeds attackSpeeds = new AttackSpeeds();
+
+		WorldEvent.ENTITY_ADDED.register(attackSpeeds);
+		PlayerEvent.TICK.register(attackSpeeds);
+		PlayerEvent.ATTACK_ENTITY.register(attackSpeeds);
+
+		AttackSpeeds.registerCommand();
 	}
 
 	public static Path getFile(String file) {
