@@ -16,13 +16,17 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.therandomlabs.randomconfigs.attackspeeds.AttackSpeeds;
 import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ReportedException;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,6 +51,8 @@ public final class RandomConfigs {
 
 	public static final boolean IS_CLIENT = FMLCommonHandler.instance().getSide().isClient();
 
+	public static final boolean RANDOMTWEAKS_LOADED = Loader.isModLoaded("randomtweaks");
+
 	public static final Gson GSON = new GsonBuilder().
 			setPrettyPrinting().
 			disableHtmlEscaping().
@@ -69,8 +75,26 @@ public final class RandomConfigs {
 		try {
 			DefaultGameRules.ensureExists();
 		} catch(IOException ex) {
-			crashReport("Failed to handle default gamerules", ex);
+			crashReport("Failed to load default gamerules", ex);
 		}
+
+		try {
+			AttackSpeeds.reload();
+		} catch(IOException ex) {
+			crashReport("Failed to load attack speeds", ex);
+		}
+	}
+
+	@Mod.EventHandler
+	public static void preInit(FMLPreInitializationEvent event) {
+		if(event.getSide().isClient()) {
+			AttackSpeeds.registerClientCommand();
+		}
+	}
+
+	@Mod.EventHandler
+	public static void serverStarting(FMLServerStartingEvent event) {
+		AttackSpeeds.registerCommand(event);
 	}
 
 	public static Path getFile(String file) {

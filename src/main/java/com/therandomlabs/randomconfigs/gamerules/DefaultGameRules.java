@@ -136,6 +136,8 @@ public final class DefaultGameRules {
 		}
 
 		final JsonObject json = RandomConfigs.readJson(JSON);
+		RandomConfigs.writeJson(JSON, json);
+
 		final List<DefaultGameRule> gameRules = new ArrayList<>();
 
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
