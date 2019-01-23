@@ -73,7 +73,7 @@ public final class AttackSpeeds
 
 	@Override
 	public boolean onPlayerAttackEntity(EntityPlayerMP player, Entity target) {
-		if(player.getEntityWorld().isRemote || player.getCooledAttackStrength(0.5F) == 1.0F) {
+		if(player.getCooledAttackStrength(0.5F) == 1.0F) {
 			return true;
 		}
 
