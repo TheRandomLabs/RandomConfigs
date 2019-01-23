@@ -15,11 +15,13 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+@Mod.EventBusSubscriber(modid = RandomConfigs.MOD_ID)
 public final class AttackSpeeds {
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 

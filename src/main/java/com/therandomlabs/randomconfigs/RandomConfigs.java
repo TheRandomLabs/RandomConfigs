@@ -21,12 +21,10 @@ import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ReportedException;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.commons.lang3.StringUtils;
@@ -92,11 +90,6 @@ public final class RandomConfigs {
 		if(event.getSide().isClient()) {
 			AttackSpeeds.registerClientCommand();
 		}
-	}
-
-	@Mod.EventHandler
-	public static void init(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(AttackSpeeds.class);
 	}
 
 	@Mod.EventHandler
