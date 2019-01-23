@@ -71,7 +71,7 @@ public final class RandomConfigs implements InitializationListener {
 		try {
 			DefaultGameRules.ensureExists();
 		} catch(IOException ex) {
-			crashReport("Failed to handle default gamerules", ex);
+			crashReport("Failed to load default gamerules", ex);
 		}
 	}
 
