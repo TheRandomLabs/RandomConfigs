@@ -45,7 +45,7 @@ public class CommandASReload extends CommandBase {
 			throw new CommandException("commands.asreloadclient.failure", ex.getMessage());
 		}
 
-		if(server != null && server.isDedicatedServer()) {
+		if(isServer) {
 			notifyCommandListener(sender, this, "Attack speed configuration reloaded!");
 		} else {
 			sender.sendMessage(new TextComponentTranslation("commands.asreloadclient.success"));
