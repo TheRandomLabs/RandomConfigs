@@ -67,6 +67,12 @@ public final class RandomConfigs implements ModInitializer {
 			crashReport("Failed to load default gamerules", ex);
 		}
 
+		try {
+			AttackSpeeds.reload();
+		} catch(IOException ex) {
+			RandomConfigs.crashReport("Failed to load attack speeds", ex);
+		}
+
 		final DefaultGameRulesHandler handler = new DefaultGameRulesHandler();
 
 		WorldEvent.INITIALIZE.register(handler);

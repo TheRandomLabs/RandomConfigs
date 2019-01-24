@@ -20,28 +20,16 @@ public final class AttackSpeeds
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 
 	private static AttackSpeedConfig speeds = new AttackSpeedConfig();
-	private static boolean reloaded;
 
 	@Override
 	public void onEntityAdded(ServerWorld world, Entity entity) {
-		if(!(entity instanceof PlayerEntity)) {
-			return;
+		if(entity instanceof PlayerEntity) {
+			final EntityAttributeInstance attackSpeed =
+					((PlayerEntity) entity).getAttributeInstance(EntityAttributes.ATTACK_SPEED);
+
+			//If configurable attack speeds are disabled, set it to the vanilla default of 4.0
+			attackSpeed.setBaseValue(speeds.enabled ? speeds.defaultAttackSpeed : 4.0);
 		}
-
-		if(!reloaded) {
-			try {
-				reload();
-				reloaded = true;
-			} catch(IOException ex) {
-				RandomConfigs.crashReport("Failed to load attack speeds", ex);
-			}
-		}
-
-		final EntityAttributeInstance attackSpeed =
-				((PlayerEntity) entity).getAttributeInstance(EntityAttributes.ATTACK_SPEED);
-
-		//If configurable attack speeds are disabled, set it to the vanilla default of 4.0
-		attackSpeed.setBaseValue(speeds.enabled ? speeds.defaultAttackSpeed : 4.0);
 	}
 
 	@Override
