@@ -18,6 +18,7 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.therandomlabs.randomconfigs.attackspeeds.AttackSpeeds;
 import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import com.therandomlabs.randomconfigs.util.CertificateHelper;
@@ -26,13 +27,14 @@ import net.minecraft.crash.ReportedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.rift.listener.ItemAdder;
 import org.dimdev.riftloader.RiftLoader;
 import org.dimdev.riftloader.Side;
 import org.dimdev.riftloader.listener.InitializationListener;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
-public final class RandomConfigs implements InitializationListener {
+public final class RandomConfigs implements InitializationListener, ItemAdder {
 	public static final String MOD_ID = "randomconfigs";
 	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
 
@@ -72,6 +74,16 @@ public final class RandomConfigs implements InitializationListener {
 			DefaultGameRules.ensureExists();
 		} catch(IOException ex) {
 			crashReport("Failed to load default gamerules", ex);
+		}
+	}
+
+	//If this is done in onInitialization, some classes are initialized too early
+	@Override
+	public void registerItems() {
+		try {
+			AttackSpeeds.reload();
+		} catch(IOException ex) {
+			RandomConfigs.crashReport("Failed to load attack speeds", ex);
 		}
 	}
 
