@@ -26,7 +26,7 @@ import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRulesHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.FabricLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +38,7 @@ public final class RandomConfigs implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	public static final boolean IS_CLIENT =
-			FabricLoader.INSTANCE.getEnvironmentHandler().getEnvironmentType() == EnvType.CLIENT;
+			FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 
 	public static final Gson GSON = new GsonBuilder().
 			setPrettyPrinting().
