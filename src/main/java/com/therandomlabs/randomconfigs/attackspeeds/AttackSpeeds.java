@@ -95,6 +95,10 @@ public final class AttackSpeeds {
 		}
 	}
 
+	public static AttackSpeedConfig get() {
+		return speeds;
+	}
+
 	public static void reload() throws IOException {
 		if(Files.exists(JSON)) {
 			speeds = RandomConfigs.readJson(JSON, AttackSpeedConfig.class);
@@ -102,10 +106,6 @@ public final class AttackSpeeds {
 		}
 
 		RandomConfigs.writeJson(JSON, speeds);
-	}
-
-	public static AttackSpeedConfig get() {
-		return speeds;
 	}
 
 	public static void registerClientCommand() {
