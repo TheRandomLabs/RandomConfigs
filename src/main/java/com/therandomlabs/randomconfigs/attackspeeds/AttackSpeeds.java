@@ -63,7 +63,7 @@ public final class AttackSpeeds {
 		final EntityPlayer player = (EntityPlayer) entity;
 		final ItemStack stack = player.getHeldItem(player.getActiveHand());
 		//1.10 compatibility
-		final Item item = stack == null ? Items.AIR : stack.getItem();
+		final Item item = stack == null ? null : stack.getItem();
 
 		final IAttributeInstance attackSpeed =
 				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
