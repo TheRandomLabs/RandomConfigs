@@ -8,7 +8,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -96,10 +95,6 @@ public final class AttackSpeeds {
 		}
 	}
 
-	public AttackSpeedConfig get() {
-		return speeds;
-	}
-
 	public static void reload() throws IOException {
 		if(Files.exists(JSON)) {
 			speeds = RandomConfigs.readJson(JSON, AttackSpeedConfig.class);
@@ -107,6 +102,10 @@ public final class AttackSpeeds {
 		}
 
 		RandomConfigs.writeJson(JSON, speeds);
+	}
+
+	public static AttackSpeedConfig get() {
+		return speeds;
 	}
 
 	public static void registerClientCommand() {
