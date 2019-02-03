@@ -82,7 +82,7 @@ public final class AttackSpeeds
 		return true;
 	}
 
-	public AttackSpeedConfig get() {
+	public static AttackSpeedConfig get() {
 		return speeds;
 	}
 
