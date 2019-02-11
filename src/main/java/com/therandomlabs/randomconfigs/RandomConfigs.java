@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
@@ -80,18 +81,21 @@ public final class RandomConfigs {
 		} catch(IOException ex) {
 			crashReport("Failed to load default gamerules", ex);
 		}
-
-		try {
-			AttackSpeeds.reload();
-		} catch(IOException ex) {
-			crashReport("Failed to load attack speeds", ex);
-		}
 	}
 
 	@Mod.EventHandler
 	public static void preInit(FMLPreInitializationEvent event) {
 		if(event.getSide().isClient()) {
 			AttackSpeeds.registerClientCommand();
+		}
+	}
+
+	@Mod.EventHandler
+	public static void init(FMLInitializationEvent event) {
+		try {
+			AttackSpeeds.reload();
+		} catch(IOException ex) {
+			crashReport("Failed to load attack speeds", ex);
 		}
 	}
 
