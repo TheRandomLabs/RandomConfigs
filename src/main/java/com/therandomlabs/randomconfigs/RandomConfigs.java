@@ -27,14 +27,14 @@ import net.minecraft.crash.ReportedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.rift.listener.ItemAdder;
+import org.dimdev.rift.listener.ParticleTypeAdder;
 import org.dimdev.riftloader.RiftLoader;
 import org.dimdev.riftloader.Side;
 import org.dimdev.riftloader.listener.InitializationListener;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
-public final class RandomConfigs implements InitializationListener, ItemAdder {
+public final class RandomConfigs implements InitializationListener, ParticleTypeAdder {
 	public static final String MOD_ID = "randomconfigs";
 	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
 
@@ -79,7 +79,7 @@ public final class RandomConfigs implements InitializationListener, ItemAdder {
 
 	//If this is done in onInitialization, some classes are initialized too early
 	@Override
-	public void registerItems() {
+	public void registerParticles() {
 		try {
 			AttackSpeeds.reload();
 		} catch(IOException ex) {
