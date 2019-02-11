@@ -55,7 +55,7 @@ public final class DefaultGameRulesHandler implements
 
 	@Override
 	public void onCreateSpawnPosition(ServerWorld world) {
-		if(world.dimension.getType() != DimensionType.field_13072) {
+		if(world.dimension.getType() != DimensionType.OVERWORLD) {
 			return;
 		}
 

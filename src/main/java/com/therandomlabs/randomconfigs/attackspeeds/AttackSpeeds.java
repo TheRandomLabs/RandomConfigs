@@ -7,6 +7,7 @@ import com.therandomlabs.randomconfigs.RandomConfigs;
 import com.therandomlabs.randomconfigs.api.event.player.PlayerAttackEntityCallback;
 import com.therandomlabs.randomconfigs.api.event.player.PlayerTickCallback;
 import com.therandomlabs.randomconfigs.api.event.world.EntityAddedCallback;
+import com.therandomlabs.randomconfigs.api.event.world.WorldInitializeCallback;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -16,11 +17,13 @@ import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public final class AttackSpeeds
-		implements EntityAddedCallback, PlayerTickCallback, PlayerAttackEntityCallback {
+public final class AttackSpeeds implements
+		EntityAddedCallback, PlayerTickCallback, PlayerAttackEntityCallback,
+		WorldInitializeCallback {
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 
 	private static AttackSpeedConfig speeds = new AttackSpeedConfig();
+	private static boolean firstReload = true;
 
 	@Override
 	public void onEntityAdded(ServerWorld world, Entity entity) {
@@ -72,6 +75,15 @@ public final class AttackSpeeds
 		return true;
 	}
 
+	@Override
+	public void onInitialize(ServerWorld world) {
+		try {
+			reload();
+		} catch(IOException ex) {
+			RandomConfigs.crashReport("Failed to load attack speeds", ex);
+		}
+	}
+
 	public static AttackSpeedConfig get() {
 		return speeds;
 	}
@@ -79,7 +91,12 @@ public final class AttackSpeeds
 	public static void reload() throws IOException {
 		if(Files.exists(JSON)) {
 			speeds = RandomConfigs.readJson(JSON, AttackSpeedConfig.class);
-			speeds.ensureCorrect();
+
+			if(firstReload) {
+				firstReload = false;
+			} else {
+				speeds.ensureCorrect();
+			}
 		}
 
 		RandomConfigs.writeJson(JSON, speeds);
