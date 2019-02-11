@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import com.therandomlabs.randomconfigs.RandomConfigs;
-import com.therandomlabs.randomconfigs.api.event.WorldEvent;
+import com.therandomlabs.randomconfigs.api.event.world.CreateSpawnPositionCallback;
+import com.therandomlabs.randomconfigs.api.event.world.WorldInitializeCallback;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
@@ -16,7 +17,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 
 public final class DefaultGameRulesHandler implements
-		WorldEvent.Initialize, WorldEvent.CreateSpawnPosition {
+		WorldInitializeCallback, CreateSpawnPositionCallback {
 	private static final Field LEVEL_PROPERTIES =
 			RandomConfigs.findField(World.class, "properties", "field_9232");
 	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
@@ -54,7 +55,7 @@ public final class DefaultGameRulesHandler implements
 
 	@Override
 	public void onCreateSpawnPosition(ServerWorld world) {
-		if(world.dimension.getType() != DimensionType.OVERWORLD) {
+		if(world.dimension.getType() != DimensionType.field_13072) {
 			return;
 		}
 

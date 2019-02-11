@@ -18,8 +18,11 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.therandomlabs.randomconfigs.api.event.PlayerEvent;
-import com.therandomlabs.randomconfigs.api.event.WorldEvent;
+import com.therandomlabs.randomconfigs.api.event.player.PlayerAttackEntityCallback;
+import com.therandomlabs.randomconfigs.api.event.player.PlayerTickCallback;
+import com.therandomlabs.randomconfigs.api.event.world.CreateSpawnPositionCallback;
+import com.therandomlabs.randomconfigs.api.event.world.EntityAddedCallback;
+import com.therandomlabs.randomconfigs.api.event.world.WorldInitializeCallback;
 import com.therandomlabs.randomconfigs.attackspeeds.AttackSpeeds;
 import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
@@ -75,14 +78,14 @@ public final class RandomConfigs implements ModInitializer {
 
 		final DefaultGameRulesHandler handler = new DefaultGameRulesHandler();
 
-		WorldEvent.INITIALIZE.register(handler);
-		WorldEvent.CREATE_SPAWN_POSITION.register(handler);
+		WorldInitializeCallback.EVENT.register(handler);
+		CreateSpawnPositionCallback.EVENT.register(handler);
 
 		final AttackSpeeds attackSpeeds = new AttackSpeeds();
 
-		WorldEvent.ENTITY_ADDED.register(attackSpeeds);
-		PlayerEvent.TICK.register(attackSpeeds);
-		PlayerEvent.ATTACK_ENTITY.register(attackSpeeds);
+		EntityAddedCallback.EVENT.register(attackSpeeds);
+		PlayerTickCallback.EVENT.register(attackSpeeds);
+		PlayerAttackEntityCallback.EVENT.register(attackSpeeds);
 
 		AttackSpeeds.registerCommand();
 	}

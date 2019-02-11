@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import com.therandomlabs.randomconfigs.RandomConfigs;
-import com.therandomlabs.randomconfigs.api.event.PlayerEvent;
-import com.therandomlabs.randomconfigs.api.event.WorldEvent;
-import net.fabricmc.fabric.commands.CommandRegistry;
+import com.therandomlabs.randomconfigs.api.event.player.PlayerAttackEntityCallback;
+import com.therandomlabs.randomconfigs.api.event.player.PlayerTickCallback;
+import com.therandomlabs.randomconfigs.api.event.world.EntityAddedCallback;
+import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -16,7 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public final class AttackSpeeds
-		implements WorldEvent.EntityAdded, PlayerEvent.Tick, PlayerEvent.AttackEntity {
+		implements EntityAddedCallback, PlayerTickCallback, PlayerAttackEntityCallback {
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 
 	private static AttackSpeedConfig speeds = new AttackSpeedConfig();
