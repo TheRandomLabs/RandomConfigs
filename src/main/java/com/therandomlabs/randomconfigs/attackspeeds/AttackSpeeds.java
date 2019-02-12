@@ -38,7 +38,7 @@ public final class AttackSpeeds implements
 
 	@Override
 	public void onPlayerTick(ServerPlayerEntity player) {
-		if(!speeds.enabled) {
+		if(!speeds.enabled || speeds.itemAttackSpeeds == null) {
 			return;
 		}
 
