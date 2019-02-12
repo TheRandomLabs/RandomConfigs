@@ -184,7 +184,15 @@ public final class RandomConfigs {
 	}
 
 	public static void writeJson(Path json, Object object) {
-		final String raw = GSON.toJson(object).replaceAll(" {2}", "\t");
+		String raw;
+
+		if(object instanceof JsonObject) {
+			raw = ((JsonObject) object).toJson(false, true);
+		} else {
+			raw = GSON.toJson(object);
+		}
+
+		raw = raw.replaceAll(" {2}", "\t");
 
 		try {
 			Files.write(json, (raw + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
