@@ -27,6 +27,15 @@ public final class AttackSpeeds implements
 
 	@Override
 	public void onEntityAdded(ServerWorld world, Entity entity) {
+		//Temporary workaround
+		if(speeds.itemAttackSpeeds == null) {
+			try {
+				reload();
+			} catch(IOException ex) {
+				RandomConfigs.crashReport("Failed to load attack speeds", ex);
+			}
+		}
+
 		if(entity instanceof PlayerEntity) {
 			final EntityAttributeInstance attackSpeed =
 					((PlayerEntity) entity).getAttributeInstance(EntityAttributes.ATTACK_SPEED);
@@ -38,7 +47,16 @@ public final class AttackSpeeds implements
 
 	@Override
 	public void onPlayerTick(ServerPlayerEntity player) {
-		if(!speeds.enabled || speeds.itemAttackSpeeds == null) {
+		//Temporary workaround
+		if(speeds.itemAttackSpeeds == null) {
+			try {
+				reload();
+			} catch(IOException ex) {
+				RandomConfigs.crashReport("Failed to load attack speeds", ex);
+			}
+		}
+
+		if(!speeds.enabled) {
 			return;
 		}
 
@@ -53,6 +71,14 @@ public final class AttackSpeeds implements
 
 	@Override
 	public boolean onPlayerAttackEntity(ServerPlayerEntity player, Entity target) {
+		//Temporary workaround
+		if(speeds.itemAttackSpeeds == null) {
+			try {
+				reload();
+			} catch(IOException ex) {
+				RandomConfigs.crashReport("Failed to load attack speeds", ex);
+			}
+		}
 		if(player.method_7261(0.5F) == 1.0F) {
 			return true;
 		}

@@ -22,7 +22,7 @@ public final class AttackSpeedConfig {
 		for(Map.Entry<String, ItemAttackSpeed> entry : attackSpeeds.entrySet()) {
 			final Identifier identifier = new Identifier(entry.getKey());
 
-			if(!Registry.ITEM.contains(identifier)) {
+			if(!Registry.ITEM.containsId(identifier)) {
 				continue;
 			}
 

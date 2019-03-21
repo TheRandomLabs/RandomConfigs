@@ -86,6 +86,7 @@ public final class RandomConfigs implements ModInitializer {
 		EntityAddedCallback.EVENT.register(attackSpeeds);
 		PlayerTickCallback.EVENT.register(attackSpeeds);
 		PlayerAttackEntityCallback.EVENT.register(attackSpeeds);
+		WorldInitializeCallback.EVENT.register(attackSpeeds);
 
 		AttackSpeeds.registerCommand();
 	}
