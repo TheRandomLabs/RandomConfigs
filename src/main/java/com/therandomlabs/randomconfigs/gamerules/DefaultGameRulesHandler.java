@@ -46,7 +46,7 @@ public final class DefaultGameRulesHandler implements
 				gameRules.setOrCreateGameRule(rule.key, rule.value, server);
 			}
 
-			GAME_RULES.set(worldInfo, new RCGameRules(server, gamerules, forced));
+			GAME_RULES.set(worldInfo, new RCGameRules(server, gameRules, forced));
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
 		}
