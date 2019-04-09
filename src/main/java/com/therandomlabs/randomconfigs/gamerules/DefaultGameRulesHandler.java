@@ -32,7 +32,7 @@ public final class DefaultGameRulesHandler implements
 		try {
 			final MinecraftServer server = world.getServer();
 			final WorldInfo worldInfo = (WorldInfo) WORLD_INFO.get(world);
-			final GameRules gamerules = (GameRules) GAME_RULES.get(worldInfo);
+			final GameRules gameRules = (GameRules) GAME_RULES.get(worldInfo);
 
 			final Set<String> forced = new HashSet<>();
 
@@ -43,7 +43,7 @@ public final class DefaultGameRulesHandler implements
 				}
 
 				forced.add(rule.key);
-				gamerules.setOrCreateGameRule(rule.key, rule.value, server);
+				gameRules.setOrCreateGameRule(rule.key, rule.value, server);
 			}
 
 			GAME_RULES.set(worldInfo, new RCGameRules(server, gamerules, forced));
