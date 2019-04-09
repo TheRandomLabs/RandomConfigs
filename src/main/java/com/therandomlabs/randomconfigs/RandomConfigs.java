@@ -20,42 +20,23 @@ import com.therandomlabs.randomconfigs.attackspeeds.AttackSpeeds;
 import com.therandomlabs.randomconfigs.configs.DefaultConfigs;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.util.ReportedException;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraft.crash.ReportedException;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.relauncher.FMLInjectionData;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(
-		modid = RandomConfigs.MOD_ID, version = RandomConfigs.VERSION,
-		acceptedMinecraftVersions = RandomConfigs.ACCEPTED_MINECRAFT_VERSIONS,
-		acceptableRemoteVersions = RandomConfigs.ACCEPTABLE_REMOTE_VERSIONS,
-		updateJSON = RandomConfigs.UPDATE_JSON,
-		certificateFingerprint = RandomConfigs.CERTIFICATE_FINGERPRINT
-)
+@Mod(RandomConfigs.MOD_ID)
 public final class RandomConfigs {
 	public static final String MOD_ID = "randomconfigs";
-	public static final String VERSION = "@VERSION@";
-	public static final String ACCEPTED_MINECRAFT_VERSIONS = "[1.10,1.13)";
-	public static final String ACCEPTABLE_REMOTE_VERSIONS = "*";
-	public static final String UPDATE_JSON =
-			"https://raw.githubusercontent.com/TheRandomLabs/RandomConfigs/misc/versions.json";
-	public static final String CERTIFICATE_FINGERPRINT = "@FINGERPRINT@";
-
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
-	public static final boolean IS_CLIENT = FMLCommonHandler.instance().getSide().isClient();
-	public static final String MC_VERSION_STRING = (String) FMLInjectionData.data()[4];
-	public static final int MC_VERSION = Integer.parseInt(MC_VERSION_STRING.split("\\.")[1]);
-
-	public static final boolean RANDOMTWEAKS_LOADED = Loader.isModLoaded("randomtweaks");
+	public static final boolean IS_CLIENT = FMLEnvironment.dist.isClient();
 
 	public static final Gson GSON = new GsonBuilder().
 			setPrettyPrinting().
@@ -68,8 +49,7 @@ public final class RandomConfigs {
 	public static final String NEWLINE_REGEX = "(\r\n|\r|\n)";
 	public static final Pattern NEWLINE = Pattern.compile(NEWLINE_REGEX);
 
-	@Mod.EventHandler
-	public static void construct(FMLConstructionEvent event) {
+	public RandomConfigs() {
 		try {
 			DefaultConfigs.handle();
 		} catch(IOException ex) {
@@ -81,26 +61,26 @@ public final class RandomConfigs {
 		} catch(IOException ex) {
 			crashReport("Failed to load default gamerules", ex);
 		}
+
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+		MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+		MinecraftForge.EVENT_BUS.register(new AttackSpeeds());
+		MinecraftForge.EVENT_BUS.register(new DefaultGameRules());
 	}
 
-	@Mod.EventHandler
-	public static void preInit(FMLPreInitializationEvent event) {
-		if(event.getSide().isClient()) {
-			AttackSpeeds.registerClientCommand();
-		}
-	}
-
-	@Mod.EventHandler
-	public static void init(FMLInitializationEvent event) {
+	private void setup(FMLCommonSetupEvent event) {
 		try {
 			AttackSpeeds.reload();
 		} catch(IOException ex) {
 			crashReport("Failed to load attack speeds", ex);
 		}
+
+		if(IS_CLIENT) {
+			AttackSpeeds.registerClientCommand();
+		}
 	}
 
-	@Mod.EventHandler
-	public static void serverStarting(FMLServerStartingEvent event) {
+	private void serverStarting(FMLServerStartingEvent event) {
 		AttackSpeeds.registerCommand(event);
 	}
 

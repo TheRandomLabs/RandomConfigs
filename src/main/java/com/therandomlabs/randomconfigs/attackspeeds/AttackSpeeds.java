@@ -10,25 +10,24 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
-@Mod.EventBusSubscriber(modid = RandomConfigs.MOD_ID)
 public final class AttackSpeeds {
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 
 	private static AttackSpeedConfig speeds = new AttackSpeedConfig();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
-		if((!speeds.enabled && RandomConfigs.RANDOMTWEAKS_LOADED) || event.getWorld().isRemote) {
+	public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+		if((!speeds.enabled && ModList.get().isLoaded("randomtweaks")) ||
+				event.getWorld().isRemote) {
 			return;
 		}
 
@@ -39,7 +38,7 @@ public final class AttackSpeeds {
 		}
 
 		final IAttributeInstance attackSpeed =
-				((EntityPlayer) entity).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+				((EntityPlayer) entity).getAttribute(SharedMonsterAttributes.ATTACK_SPEED);
 
 		//If configurable attack speeds are disabled, set it to the vanilla default of 4.0
 		//unless RandomTweaks is installed (see above if statement) since RandomTweaks
@@ -48,7 +47,7 @@ public final class AttackSpeeds {
 	}
 
 	@SubscribeEvent
-	public static void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
+	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
 		if(!speeds.enabled) {
 			return;
 		}
@@ -61,18 +60,16 @@ public final class AttackSpeeds {
 
 		final EntityPlayer player = (EntityPlayer) entity;
 		final ItemStack stack = player.getHeldItem(player.getActiveHand());
-		//1.10 compatibility
-		final Item item = stack == null ? null : stack.getItem();
 
 		final IAttributeInstance attackSpeed =
-				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+				player.getAttribute(SharedMonsterAttributes.ATTACK_SPEED);
 
-		final ItemAttackSpeed speed = speeds.itemAttackSpeeds.get(item);
+		final ItemAttackSpeed speed = speeds.itemAttackSpeeds.get(stack.getItem());
 		attackSpeed.setBaseValue(speed == null ? speeds.defaultAttackSpeed : speed.speed);
 	}
 
 	@SubscribeEvent
-	public static void onPlayerAttackEntity(AttackEntityEvent event) {
+	public void onPlayerAttackEntity(AttackEntityEvent event) {
 		final EntityPlayer player = event.getEntityPlayer();
 
 		if(player.getEntityWorld().isRemote || player.getCooledAttackStrength(0.5F) == 1.0F) {
@@ -110,13 +107,13 @@ public final class AttackSpeeds {
 
 	public static void registerClientCommand() {
 		if(speeds.asreloadclientCommand) {
-			ClientCommandHandler.instance.registerCommand(new CommandASReload(Side.CLIENT));
+			//ClientCommandRegistry.instance.registerCommand(new ASReloadCommand(Side.CLIENT));
 		}
 	}
 
 	public static void registerCommand(FMLServerStartingEvent event) {
 		if(speeds.asreloadCommand) {
-			event.registerServerCommand(new CommandASReload(Side.SERVER));
+			ASReloadCommand.register(event.getCommandDispatcher(), Dist.DEDICATED_SERVER);
 		}
 	}
 }

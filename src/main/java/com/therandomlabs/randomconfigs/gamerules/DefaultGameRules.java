@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -14,16 +15,16 @@ import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
-import net.minecraft.world.DimensionType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@Mod.EventBusSubscriber(modid = RandomConfigs.MOD_ID)
 public final class DefaultGameRules {
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
 	public static final String DIFFICULTY = "DIFFICULTY";
@@ -31,24 +32,73 @@ public final class DefaultGameRules {
 
 	public static final Path JSON = RandomConfigs.getJson("defaultgamerules");
 
-	public static final List<String> DEFAULT = RandomConfigs.readLines(
-			DefaultGameRules.class.getResourceAsStream(
-					"/assets/randomconfigs/defaultgamerules.json"
-			)
-	);
+	//Temporary until I can figure out how to read defaultgamerules.json in mod jar
+	public static final List<String> DEFAULT = Arrays.asList(("{\n" +
+			"\t/*\n" +
+			"\t//Top-level gamerules are set for all game modes and world types.\n" +
+			"\t\"commandBlockOutput\": {\n" +
+			"\t\t//Each gamerule has two properties: the value, and whether the value should be " +
+			"forced.\n" +
+			"\t\t//RandomConfigs makes sure that forced gamerules are not changed.\n" +
+			"\t\t\"value\": false,\n" +
+			"\t\t\"forced\": false\n" +
+			"\t},\n" +
+			"\t\"keepInventory\": {\n" +
+			"\t\t\"value\": true,\n" +
+			"\t\t\"forced\": false\n" +
+			"\t},\n" +
+			"\t\"MODE_OR_WORLD_TYPE_SPECIFIC\": {\n" +
+			"\t\t//Gamerules can be set for specific game modes and world types in the format:\n" +
+			"\t\t//MODE,MODE,...:TYPE,TYPE,...\n" +
+			"\t\t\"creative:flat,void\": {\n" +
+			"\t\t\t\"doDaylightCycle\": {\n" +
+			"\t\t\t\t\"value\": false,\n" +
+			"\t\t\t\t\"forced\": true\n" +
+			"\t\t\t},\n" +
+			"\t\t\t\"doWeatherCycle\": {\n" +
+			"\t\t\t\t\"value\": false,\n" +
+			"\t\t\t\t\"forced\": true\n" +
+			"\t\t\t},\n" +
+			"\t\t\t\"doMobSpawning\": {\n" +
+			"\t\t\t\t\"value\": false,\n" +
+			"\t\t\t\t\"forced\": false\n" +
+			"\t\t\t}\n" +
+			"\t\t},\n" +
+			"\t\t//The game mode or world type does not have to be specified.\n" +
+			"\t\t//For an empty game mode, use:\n" +
+			"\t\t//:TYPE,TYPE,...\n" +
+			"\t\t//For example, use \":void\" to specify gamerules for all Void worlds.\n" +
+			"\t\t//The following specifies gamerules for all survival worlds.\n" +
+			"\t\t\"survival\": {\n" +
+			"\t\t\t//This isn't really a gamerule. RandomConfigs uses this to determine the " +
+			"difficulty.\n" +
+			"\t\t\t\"DIFFICULTY\": {\n" +
+			"\t\t\t\t//Valid values: \"peaceful\", \"easy\", \"normal\", \"hard\"\n" +
+			"\t\t\t\t\"value\": \"hard\",\n" +
+			"\t\t\t\t//Whether the difficulty should be locked on world creation\n" +
+			"\t\t\t\t\"forced\": true\n" +
+			"\t\t\t},\n" +
+			"\t\t\t//This is also not an actual gamerule.\n" +
+			"\t\t\t//It's used to determine the world border size in blocks from (0, 0).\n" +
+			"\t\t\t\"WORLD_BORDER_SIZE\": 10000\n" +
+			"\t\t}\n" +
+			"\t}\n" +
+			"\t*/\n" +
+			"}\n").split("\n"));
 
 	private static List<DefaultGameRule> defaultGameRules;
 
 	@SubscribeEvent
-	public static void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
-		final World world = event.getWorld();
+	public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
+		final WorldServer world = (WorldServer) event.getWorld();
 
-		if(world.provider.getDimensionType() != DimensionType.OVERWORLD) {
+		if(world.getDimension().getType() != DimensionType.OVERWORLD) {
 			return;
 		}
 
 		defaultGameRules = get(world);
 
+		final MinecraftServer server = world.getServer();
 		final WorldInfo worldInfo = world.getWorldInfo();
 
 		for(DefaultGameRule rule : defaultGameRules) {
@@ -75,15 +125,15 @@ public final class DefaultGameRules {
 				continue;
 			}
 
-			worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
+			worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value, server);
 		}
 	}
 
 	@SubscribeEvent
-	public static void onWorldLoad(WorldEvent.Load event) {
-		final World world = event.getWorld();
+	public void onWorldLoad(WorldEvent.Load event) {
+		final IWorld world = event.getWorld();
 
-		if(world.isRemote) {
+		if(world.isRemote()) {
 			return;
 		}
 
@@ -91,26 +141,21 @@ public final class DefaultGameRules {
 			defaultGameRules = get(world);
 		}
 
+		final MinecraftServer server = ((WorldServer) world).getServer();
 		final WorldInfo worldInfo = world.getWorldInfo();
 		final Set<String> forced = new HashSet<>();
 
 		for(DefaultGameRule rule : defaultGameRules) {
-			if(rule.key.equals(DIFFICULTY) || rule.key.equals(WORLD_BORDER_SIZE)) {
+			if(!rule.forced || rule.key.equals(DefaultGameRules.DIFFICULTY) ||
+					rule.key.equals(DefaultGameRules.WORLD_BORDER_SIZE)) {
 				continue;
 			}
 
-			if(rule.forced) {
-				forced.add(rule.key);
-				worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
-				continue;
-			}
-
-			if(!worldInfo.gameRules.hasRule(rule.key)) {
-				worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value);
-			}
+			forced.add(rule.key);
+			worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value, server);
 		}
 
-		worldInfo.gameRules = new RCGameRules(worldInfo.gameRules, forced);
+		worldInfo.gameRules = new RCGameRules(server, worldInfo.gameRules, forced);
 		defaultGameRules = null;
 	}
 
@@ -265,11 +310,11 @@ public final class DefaultGameRules {
 		);
 	}
 
-	private static List<DefaultGameRule> get(World world) {
+	private static List<DefaultGameRule> get(IWorld world) {
 		try {
 			return get(
 					world.getWorldInfo().getGameType().getID(),
-					world.getWorldType().getName()
+					world.getWorldInfo().getTerrainType().getName()
 			);
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to read default gamerules", ex);

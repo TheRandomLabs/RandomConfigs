@@ -4,8 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.RegistryNamespaced;
+import net.minecraftforge.registries.GameData;
 
 public final class AttackSpeedConfig {
+	private static final RegistryNamespaced<Item> ITEM_REGISTRY = GameData.getWrapper(Item.class);
+
 	public Map<String, ItemAttackSpeed> attackSpeeds = new HashMap<>();
 	public double defaultAttackSpeed = 4.0;
 	public boolean disableAttacksDuringAttackCooldownByDefault;
@@ -20,7 +24,7 @@ public final class AttackSpeedConfig {
 		itemAttackSpeeds = new HashMap<>(attackSpeeds.size());
 
 		for(Map.Entry<String, ItemAttackSpeed> entry : attackSpeeds.entrySet()) {
-			final Item item = Item.REGISTRY.getObject(new ResourceLocation(entry.getKey()));
+			final Item item = ITEM_REGISTRY.func_212608_b(new ResourceLocation(entry.getKey()));
 
 			if(item == null) {
 				continue;

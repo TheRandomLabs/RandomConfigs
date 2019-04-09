@@ -1,0 +1,16 @@
+modLoader = "javafml"
+loaderVersion = "[13,)"
+updateJSONURL = "https://raw.githubusercontent.com/TheRandomLabs/RandomConfigs/misc/versions.json"
+issueTrackerURL = "https://github.com/TheRandomLabs/RandomConfigs/issues"
+displayURL = "https://minecraft.curseforge.com/projects/randomconfigs"
+logoFile = "logo.png"
+authors = "TheRandomLabs"
+
+[[mods]]
+
+modId = "randomconfigs"
+version = "${file.jarVersion}"
+displayName = "RandomConfigs"
+description = '''
+RandomConfigs, a utility mod for setting default configurations, gamerules, difficulties and world borders.
+'''
