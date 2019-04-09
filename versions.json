@@ -1,5 +1,8 @@
 {
 	"homepage": "https://minecraft.curseforge.com/projects/randomconfigs",
+	"1.13.2": {
+		"1.13.2-1.3.2.3": "Ported 1.12.2-1.3.2.3 to 1.13.2.",
+	},
 	"1.12.2": {
 		"1.12.2-1.3.2.3": "Fixed JSON deformation.",
 		"1.12.2-1.3.2.2": "Fixed the attack speed configuration being reset.",
@@ -162,6 +165,8 @@
 		"1.12.2-1.0.0.0": "Initial release."
 	},
 	"promos": {
+		"1.13.2-latest": "1.13.2-1.3.2.3",
+		"1.13.2-recommended": "1.13.2-1.3.2.3",
 		"1.12.2-latest": "1.12.2-1.3.2.3",
 		"1.12.2-recommended": "1.12.2-1.3.2.3",
 		"1.12.1-latest": "1.12.2-1.3.2.3",
