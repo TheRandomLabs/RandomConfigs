@@ -79,7 +79,7 @@ public final class AttackSpeeds implements
 				RandomConfigs.crashReport("Failed to load attack speeds", ex);
 			}
 		}
-		if(player.method_7261(0.5F) == 1.0F) {
+		if(player.getAttackCooldownProgress(0.5F) == 1.0F) {
 			return true;
 		}
 
@@ -88,12 +88,12 @@ public final class AttackSpeeds implements
 
 		if(speed == null) {
 			if(speeds.disableAttacksDuringAttackCooldownByDefault) {
-				player.method_7350();
+				player.resetLastAttackedTicks();
 				return false;
 			}
 		} else {
 			if(speed.disableAttacksDuringAttackCooldown) {
-				player.method_7350();
+				player.resetLastAttackedTicks();
 				return false;
 			}
 		}

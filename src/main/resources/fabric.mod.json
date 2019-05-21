@@ -2,7 +2,7 @@
 	"id": "randomconfigs",
 	"name": "RandomConfigs",
 	"description": "A utility mod for setting default configurations, gamerules, difficulties and world borders.",
-	"version": "1.14-1.3.3.0-Fabric",
+	"version": "1.14.1-1.3.4.0-Fabric",
 	"side": "universal",
 	"initializer": "com.therandomlabs.randomconfigs.RandomConfigs",
 	"requires": {

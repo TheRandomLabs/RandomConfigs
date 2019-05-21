@@ -6,10 +6,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.command.CommandException;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
 public final class ASReloadCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -28,24 +28,24 @@ public final class ASReloadCommand {
 			RandomConfigs.LOGGER.error("Failed to reload attack speed configuration", ex);
 
 			if(isServer) {
-				throw new CommandException(new StringTextComponent(
+				throw new CommandException(new TextComponent(
 						"Failed to reload attack speed configuration: " + ex.getMessage()
 				));
 			}
 
-			throw new CommandException(new TranslatableTextComponent(
+			throw new CommandException(new TranslatableComponent(
 					"commands.asreloadclient.failure", ex.getMessage()
 			));
 		}
 
 		if(isServer) {
 			source.sendFeedback(
-					new StringTextComponent("Attack speed configuration reloaded!"),
+					new TextComponent("Attack speed configuration reloaded!"),
 					true
 			);
 		} else {
 			source.sendFeedback(
-					new TranslatableTextComponent("commands.asreloadclient.success"),
+					new TranslatableComponent("commands.asreloadclient.success"),
 					true
 			);
 		}
