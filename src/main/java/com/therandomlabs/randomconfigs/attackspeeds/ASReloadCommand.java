@@ -8,8 +8,8 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 
 public class ASReloadCommand {
@@ -31,26 +31,24 @@ public class ASReloadCommand {
 			RandomConfigs.LOGGER.error("Failed to reload attack speed configuration", ex);
 
 			if(isServer) {
-				throw new CommandException(new TextComponentString(
+				throw new CommandException(new StringTextComponent(
 						"Failed to reload attack speed configuration: " + ex.getMessage()
 				));
 			}
 
-			//noinspection NoTranslation
-			throw new CommandException(new TextComponentTranslation(
+			throw new CommandException(new TranslationTextComponent(
 					"commands.asreloadclient.failure", ex.getMessage()
 			));
 		}
 
 		if(isServer) {
 			source.sendFeedback(
-					new TextComponentString("Attack speed configuration reloaded!"),
+					new StringTextComponent("Attack speed configuration reloaded!"),
 					true
 			);
 		} else {
-			//noinspection NoTranslation
 			source.sendFeedback(
-					new TextComponentTranslation("commands.asreloadclient.success"),
+					new TranslationTextComponent("commands.asreloadclient.success"),
 					true
 			);
 		}

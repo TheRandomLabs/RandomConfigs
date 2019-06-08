@@ -16,10 +16,10 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameType;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.world.WorldEvent;
@@ -90,7 +90,7 @@ public final class DefaultGameRules {
 
 	@SubscribeEvent
 	public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
-		final WorldServer world = (WorldServer) event.getWorld();
+		final ServerWorld world = (ServerWorld) event.getWorld();
 
 		if(world.getDimension().getType() != DimensionType.OVERWORLD) {
 			return;
@@ -105,7 +105,7 @@ public final class DefaultGameRules {
 			if(rule.key.equals(DIFFICULTY)) {
 				try {
 					worldInfo.setDifficulty(
-							EnumDifficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
+							Difficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
 					);
 					worldInfo.setDifficultyLocked(rule.forced);
 				} catch(IllegalArgumentException ex) {
@@ -141,7 +141,7 @@ public final class DefaultGameRules {
 			defaultGameRules = get(world);
 		}
 
-		final MinecraftServer server = ((WorldServer) world).getServer();
+		final MinecraftServer server = ((ServerWorld) world).getServer();
 		final WorldInfo worldInfo = world.getWorldInfo();
 		final Set<String> forced = new HashSet<>();
 
@@ -314,7 +314,7 @@ public final class DefaultGameRules {
 		try {
 			return get(
 					world.getWorldInfo().getGameType().getID(),
-					world.getWorldInfo().getTerrainType().getName()
+					world.getWorldInfo().getGenerator().getName()
 			);
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to read default gamerules", ex);

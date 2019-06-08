@@ -7,7 +7,7 @@ import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -33,12 +33,12 @@ public final class AttackSpeeds {
 
 		final Entity entity = event.getEntity();
 
-		if(!(entity instanceof EntityPlayer)) {
+		if(!(entity instanceof PlayerEntity)) {
 			return;
 		}
 
 		final IAttributeInstance attackSpeed =
-				((EntityPlayer) entity).getAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+				((PlayerEntity) entity).getAttribute(SharedMonsterAttributes.ATTACK_SPEED);
 
 		//If configurable attack speeds are disabled, set it to the vanilla default of 4.0
 		//unless RandomTweaks is installed (see above if statement) since RandomTweaks
@@ -54,11 +54,11 @@ public final class AttackSpeeds {
 
 		final Entity entity = event.getEntity();
 
-		if(entity.getEntityWorld().isRemote || !(entity instanceof EntityPlayer)) {
+		if(entity.getEntityWorld().isRemote || !(entity instanceof PlayerEntity)) {
 			return;
 		}
 
-		final EntityPlayer player = (EntityPlayer) entity;
+		final PlayerEntity player = (PlayerEntity) entity;
 		final ItemStack stack = player.getHeldItem(player.getActiveHand());
 
 		final IAttributeInstance attackSpeed =
@@ -70,7 +70,7 @@ public final class AttackSpeeds {
 
 	@SubscribeEvent
 	public void onPlayerAttackEntity(AttackEntityEvent event) {
-		final EntityPlayer player = event.getEntityPlayer();
+		final PlayerEntity player = event.getEntityPlayer();
 
 		if(player.getEntityWorld().isRemote || player.getCooledAttackStrength(0.5F) == 1.0F) {
 			return;
