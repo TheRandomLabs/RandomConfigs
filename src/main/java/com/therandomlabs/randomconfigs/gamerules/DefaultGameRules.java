@@ -314,7 +314,7 @@ public final class DefaultGameRules {
 		try {
 			return get(
 					world.getWorldInfo().getGameType().getID(),
-					world.getWorldInfo().getTerrainType().getName()
+					world.getWorldInfo().getGenerator().getName()
 			);
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to read default gamerules", ex);

@@ -25,9 +25,9 @@ archivesBaseName = "randomconfigs"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
 
 minecraft {
-	mappings channel: "snapshot", version: "20180921-1.13"
+	mappings channel: "snapshot", version: "20190526-1.13.2"
 
-	accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
+	accessTransformer = file("build/resources/main/META-INF/accesstransformer.cfg")
 
 	runs {
 		client {
@@ -68,7 +68,7 @@ configurations {
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:1.13.2-25.0.110"
+	minecraft "net.minecraftforge:forge:1.13.2-25.0.219"
 	shade "blue.endless:jankson:1.1.0"
 }
 

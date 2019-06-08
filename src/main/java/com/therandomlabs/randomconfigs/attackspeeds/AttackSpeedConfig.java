@@ -2,6 +2,7 @@ package com.therandomlabs.randomconfigs.attackspeeds;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.RegistryNamespaced;
@@ -24,7 +25,7 @@ public final class AttackSpeedConfig {
 		itemAttackSpeeds = new HashMap<>(attackSpeeds.size());
 
 		for(Map.Entry<String, ItemAttackSpeed> entry : attackSpeeds.entrySet()) {
-			final Item item = ITEM_REGISTRY.func_212608_b(new ResourceLocation(entry.getKey()));
+			final Item item = ITEM_REGISTRY.get(new ResourceLocation(entry.getKey()));
 
 			if(item == null) {
 				continue;
