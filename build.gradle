@@ -81,7 +81,7 @@ jar {
 			"Implementation-Vendor": "TheRandomLabs",
 			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
 		])
-    }
+	}
 
 	configurations.shade.each { dep ->
 		from(project.zipTree(dep)){
