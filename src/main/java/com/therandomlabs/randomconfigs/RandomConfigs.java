@@ -3,6 +3,7 @@ package com.therandomlabs.randomconfigs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -240,5 +241,18 @@ public final class RandomConfigs implements ModInitializer {
 		}
 
 		return field;
+	}
+
+	public static Method findMethod(Class<?> clazz, String name, String obfName) {
+		for(Method method : clazz.getDeclaredMethods()) {
+			final String methodName = method.getName();
+
+			if(name.equals(methodName) || obfName.equals(methodName)) {
+				method.setAccessible(true);
+				return method;
+			}
+		}
+
+		return null;
 	}
 }

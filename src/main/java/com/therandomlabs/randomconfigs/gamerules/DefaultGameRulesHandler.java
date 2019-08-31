@@ -1,6 +1,8 @@
 package com.therandomlabs.randomconfigs.gamerules;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -8,21 +10,19 @@ import java.util.Set;
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import com.therandomlabs.randomconfigs.api.event.world.CreateSpawnPositionCallback;
 import com.therandomlabs.randomconfigs.api.event.world.WorldInitializeCallback;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 
-public final class DefaultGameRulesHandler implements
-		WorldInitializeCallback, CreateSpawnPositionCallback {
-	private static final Field LEVEL_PROPERTIES =
-			RandomConfigs.findField(World.class, "properties", "field_9232");
+public final class DefaultGameRulesHandler
+		implements WorldInitializeCallback, CreateSpawnPositionCallback {
 	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
 			RandomConfigs.findField(LevelProperties.class, "gameRules", "field_154")
 	);
+	private static final Method SET_FROM_STRING =
+			RandomConfigs.findMethod(GameRules.Rule.class, "setFromString", "method_20777");
 
 	private static List<DefaultGameRule> defaultGameRules;
 
@@ -31,9 +31,8 @@ public final class DefaultGameRulesHandler implements
 		defaultGameRules = DefaultGameRules.get(world);
 
 		try {
-			final MinecraftServer server = world.getServer();
-			final LevelProperties properties = (LevelProperties) LEVEL_PROPERTIES.get(world);
-			final GameRules gamerules = (GameRules) GAME_RULES.get(properties);
+			final LevelProperties properties = world.getLevelProperties();
+			final GameRules gameRules = properties.getGameRules();
 
 			final Set<String> forced = new HashSet<>();
 
@@ -44,10 +43,10 @@ public final class DefaultGameRulesHandler implements
 				}
 
 				forced.add(rule.key);
-				gamerules.put(rule.key, rule.value, server);
+				setDefaultGameRule(world, rule);
 			}
 
-			GAME_RULES.set(properties, new RCGameRules(server, gamerules, forced));
+			GAME_RULES.set(properties, new ForcedGameRules(gameRules, forced));
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
 		}
@@ -59,13 +58,7 @@ public final class DefaultGameRulesHandler implements
 			return;
 		}
 
-		LevelProperties properties = null;
-
-		try {
-			properties = (LevelProperties) LEVEL_PROPERTIES.get(world);
-		} catch(Exception ex) {
-			RandomConfigs.crashReport("Failed to retrieve level properties", ex);
-		}
+		final LevelProperties properties = world.getLevelProperties();
 
 		if(defaultGameRules == null) {
 			defaultGameRules = DefaultGameRules.get(world);
@@ -79,7 +72,7 @@ public final class DefaultGameRulesHandler implements
 					);
 					properties.setDifficultyLocked(rule.forced);
 				} catch(IllegalArgumentException ex) {
-					RandomConfigs.LOGGER.error("Invalid difficulty: " + rule.value);
+					RandomConfigs.LOGGER.error("Invalid difficulty: {}", rule.value);
 				}
 
 				continue;
@@ -89,15 +82,27 @@ public final class DefaultGameRulesHandler implements
 				try {
 					world.getWorldBorder().setSize(Integer.parseInt(rule.value));
 				} catch(NumberFormatException ex) {
-					RandomConfigs.LOGGER.error("Invalid world border size: " + rule.value);
+					RandomConfigs.LOGGER.error("Invalid world border size: {}", rule.value);
 				}
 
 				continue;
 			}
 
-			properties.getGameRules().put(rule.key, rule.value, world.getServer());
+			setDefaultGameRule(world, rule);
 		}
 
 		defaultGameRules = null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void setDefaultGameRule(ServerWorld world, DefaultGameRule rule) {
+		try {
+			SET_FROM_STRING.invoke(
+					world.getLevelProperties().getGameRules().get(new GameRules.RuleKey(rule.key)),
+					rule.value
+			);
+		} catch(IllegalAccessException | InvocationTargetException ex) {
+			RandomConfigs.crashReport("Failed to set default gamerule", ex);
+		}
 	}
 }

@@ -17,8 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public final class AttackSpeeds implements
-		EntityAddedCallback, PlayerTickCallback, PlayerAttackEntityCallback,
+public final class AttackSpeeds
+		implements EntityAddedCallback, PlayerTickCallback, PlayerAttackEntityCallback,
 		WorldInitializeCallback {
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 
