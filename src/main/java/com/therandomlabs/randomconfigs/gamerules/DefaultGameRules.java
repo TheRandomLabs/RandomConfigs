@@ -15,12 +15,12 @@ import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -88,6 +88,7 @@ public final class DefaultGameRules {
 
 	private static List<DefaultGameRule> defaultGameRules;
 
+	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
 		final ServerWorld world = (ServerWorld) event.getWorld();
@@ -98,7 +99,6 @@ public final class DefaultGameRules {
 
 		defaultGameRules = get(world);
 
-		final MinecraftServer server = world.getServer();
 		final WorldInfo worldInfo = world.getWorldInfo();
 
 		for(DefaultGameRule rule : defaultGameRules) {
@@ -109,7 +109,7 @@ public final class DefaultGameRules {
 					);
 					worldInfo.setDifficultyLocked(rule.forced);
 				} catch(IllegalArgumentException ex) {
-					RandomConfigs.LOGGER.error("Invalid difficulty: " + rule.value);
+					RandomConfigs.LOGGER.error("Invalid difficulty: {}", rule.value);
 				}
 
 				continue;
@@ -119,16 +119,17 @@ public final class DefaultGameRules {
 				try {
 					world.getWorldBorder().setSize(Integer.parseInt(rule.value));
 				} catch(NumberFormatException ex) {
-					RandomConfigs.LOGGER.error("Invalid world border size: " + rule.value);
+					RandomConfigs.LOGGER.error("Invalid world border size: {}", rule.value);
 				}
 
 				continue;
 			}
 
-			worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value, server);
+			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).func_223553_a(rule.value);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
 		final IWorld world = event.getWorld();
@@ -141,7 +142,6 @@ public final class DefaultGameRules {
 			defaultGameRules = get(world);
 		}
 
-		final MinecraftServer server = ((ServerWorld) world).getServer();
 		final WorldInfo worldInfo = world.getWorldInfo();
 		final Set<String> forced = new HashSet<>();
 
@@ -152,10 +152,10 @@ public final class DefaultGameRules {
 			}
 
 			forced.add(rule.key);
-			worldInfo.gameRules.setOrCreateGameRule(rule.key, rule.value, server);
+			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).func_223553_a(rule.value);
 		}
 
-		worldInfo.gameRules = new RCGameRules(server, worldInfo.gameRules, forced);
+		worldInfo.gameRules = new ForcedGameRules(worldInfo.gameRules, forced);
 		defaultGameRules = null;
 	}
 
@@ -215,8 +215,9 @@ public final class DefaultGameRules {
 		return gameRules;
 	}
 
-	private static void getSpecific(List<DefaultGameRule> gameRules, JsonObject json, int gamemode,
-			String worldType) {
+	private static void getSpecific(
+			List<DefaultGameRule> gameRules, JsonObject json, int gamemode, String worldType
+	) {
 		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();
 
