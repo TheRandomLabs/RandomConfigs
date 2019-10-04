@@ -3,6 +3,9 @@
 	"compatibilityLevel": "JAVA_8",
 	"package": "com.therandomlabs.randomconfigs.mixin",
 	"mixins": [
+		"IMixinGameRules",
+		"IMixinLevelProperties",
+		"MixinRule",
 		"MixinServerPlayerEntity",
 		"MixinServerWorld",
 		"MixinWorldChunk"

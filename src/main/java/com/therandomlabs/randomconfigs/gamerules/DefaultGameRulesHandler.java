@@ -1,15 +1,14 @@
 package com.therandomlabs.randomconfigs.gamerules;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import com.therandomlabs.randomconfigs.RandomConfigs;
+import com.therandomlabs.randomconfigs.api.IMixinRule;
 import com.therandomlabs.randomconfigs.api.event.world.CreateSpawnPositionCallback;
 import com.therandomlabs.randomconfigs.api.event.world.WorldInitializeCallback;
+import com.therandomlabs.randomconfigs.mixin.IMixinLevelProperties;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -18,12 +17,6 @@ import net.minecraft.world.level.LevelProperties;
 
 public final class DefaultGameRulesHandler
 		implements WorldInitializeCallback, CreateSpawnPositionCallback {
-	private static final Field GAME_RULES = RandomConfigs.removeFinalModifier(
-			RandomConfigs.findField(LevelProperties.class, "gameRules", "field_154")
-	);
-	private static final Method SET_FROM_STRING =
-			RandomConfigs.findMethod(GameRules.Rule.class, "setFromString", "method_20777");
-
 	private static List<DefaultGameRule> defaultGameRules;
 
 	@Override
@@ -46,7 +39,9 @@ public final class DefaultGameRulesHandler
 				setDefaultGameRule(world, rule);
 			}
 
-			GAME_RULES.set(properties, new ForcedGameRules(gameRules, forced));
+			((IMixinLevelProperties) properties).setGameRules(
+					new ForcedGameRules(gameRules, forced)
+			);
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
 		}
@@ -96,13 +91,8 @@ public final class DefaultGameRulesHandler
 
 	@SuppressWarnings("unchecked")
 	private static void setDefaultGameRule(ServerWorld world, DefaultGameRule rule) {
-		try {
-			SET_FROM_STRING.invoke(
-					world.getLevelProperties().getGameRules().get(new GameRules.RuleKey(rule.key)),
-					rule.value
-			);
-		} catch(IllegalAccessException | InvocationTargetException ex) {
-			RandomConfigs.crashReport("Failed to set default gamerule", ex);
-		}
+		((IMixinRule) world.getLevelProperties().getGameRules().get(
+				new GameRules.RuleKey(rule.key)
+		)).set(rule.value);
 	}
 }

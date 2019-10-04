@@ -1,8 +1,7 @@
 package com.therandomlabs.randomconfigs.gamerules;
 
-import java.lang.reflect.Field;
 import com.mojang.brigadier.context.CommandContext;
-import com.therandomlabs.randomconfigs.RandomConfigs;
+import com.therandomlabs.randomconfigs.api.IMixinRule;
 import net.minecraft.world.GameRules;
 
 public final class ForcedValue {
@@ -10,7 +9,7 @@ public final class ForcedValue {
 		private final GameRules.IntRule rule;
 
 		public ForcedIntegerValue(GameRules.IntRule rule) {
-			super(getType(rule), rule.get());
+			super(((IMixinRule) rule).getType(), rule.get());
 			this.rule = rule;
 		}
 
@@ -40,7 +39,7 @@ public final class ForcedValue {
 		private final GameRules.BooleanRule rule;
 
 		public ForcedBooleanValue(GameRules.BooleanRule rule) {
-			super(getType(rule), rule.get());
+			super(((IMixinRule) rule).getType(), rule.get());
 			this.rule = rule;
 		}
 
@@ -66,9 +65,6 @@ public final class ForcedValue {
 		}
 	}
 
-	private static final Field TYPE =
-			RandomConfigs.findField(GameRules.class, "type", "field_19417");
-
 	private ForcedValue() {}
 
 	public static GameRules.Rule get(GameRules.Rule rule) {
@@ -77,18 +73,5 @@ public final class ForcedValue {
 		}
 
 		return new ForcedBooleanValue((GameRules.BooleanRule) rule);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T extends GameRules.Rule<T>> GameRules.RuleType<T> getType(
-			GameRules.Rule rule
-	) {
-		try {
-			return (GameRules.RuleType<T>) TYPE.get(rule);
-		} catch(IllegalAccessException ex) {
-			RandomConfigs.crashReport("Failed to get gamerule type", ex);
-		}
-
-		return null;
 	}
 }

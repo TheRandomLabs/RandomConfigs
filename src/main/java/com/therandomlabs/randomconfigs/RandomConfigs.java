@@ -2,9 +2,6 @@ package com.therandomlabs.randomconfigs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -54,8 +51,6 @@ public final class RandomConfigs implements ModInitializer {
 
 	public static final String NEWLINE_REGEX = "(\r\n|\r|\n)";
 	public static final Pattern NEWLINE = Pattern.compile(NEWLINE_REGEX);
-
-	private static Field modifiers;
 
 	@Override
 	public void onInitialize() {
@@ -213,46 +208,5 @@ public final class RandomConfigs implements ModInitializer {
 
 	public static void crashReport(String message, Exception ex) {
 		throw new CrashException(new CrashReport(message, ex));
-	}
-
-	public static Field findField(Class<?> clazz, String name, String obfName) {
-		for(Field field : clazz.getDeclaredFields()) {
-			final String fieldName = field.getName();
-
-			if(name.equals(fieldName) || obfName.equals(fieldName)) {
-				field.setAccessible(true);
-				return field;
-			}
-		}
-
-		return null;
-	}
-
-	public static Field removeFinalModifier(Field field) {
-		try {
-			if(modifiers == null) {
-				modifiers = Field.class.getDeclaredField("modifiers");
-				modifiers.setAccessible(true);
-			}
-
-			modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-		} catch(Exception ex) {
-			crashReport("Failed to make " + field.getName() + " non-final", ex);
-		}
-
-		return field;
-	}
-
-	public static Method findMethod(Class<?> clazz, String name, String obfName) {
-		for(Method method : clazz.getDeclaredMethods()) {
-			final String methodName = method.getName();
-
-			if(name.equals(methodName) || obfName.equals(methodName)) {
-				method.setAccessible(true);
-				return method;
-			}
-		}
-
-		return null;
 	}
 }
