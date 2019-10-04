@@ -1,14 +1,30 @@
 {
+	"schemaVersion": 1,
 	"id": "randomconfigs",
+	"version": "${version}",
 	"name": "RandomConfigs",
 	"description": "A utility mod for setting default configurations, gamerules, difficulties and world borders.",
-	"version": "1.14.4-1.4.1.0-Fabric",
-	"side": "universal",
-	"initializer": "com.therandomlabs.randomconfigs.RandomConfigs",
-	"requires": {
-		"fabric": "*"
+	"authors": [
+		"TheRandomLabs"
+	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/randomconfigs",
+		"sources": "https://github.com/TheRandomLabs/RandomConfigs"
 	},
-	"mixins": {
-		"common": "randomconfigs.common.json"
-	}
+	"license": "MIT License",
+	"icon": "assets/randomconfigs/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.therandomlabs.randomconfigs.RandomConfigs"
+		]
+	},
+	"mixins": [
+		"randomconfigs.common.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.4.0",
+    	"fabric": "*"
+	},
+	"suggests": {}
 }
