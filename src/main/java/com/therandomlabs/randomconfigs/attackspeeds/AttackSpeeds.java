@@ -3,23 +3,28 @@ package com.therandomlabs.randomconfigs.attackspeeds;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import com.mojang.brigadier.CommandDispatcher;
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import com.therandomlabs.randomconfigs.api.event.player.PlayerAttackEntityCallback;
 import com.therandomlabs.randomconfigs.api.event.player.PlayerTickCallback;
 import com.therandomlabs.randomconfigs.api.event.world.EntityAddedCallback;
 import com.therandomlabs.randomconfigs.api.event.world.WorldInitializeCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class AttackSpeeds
 		implements EntityAddedCallback, PlayerTickCallback, PlayerAttackEntityCallback,
-		WorldInitializeCallback {
+		WorldInitializeCallback, CommandRegistrationCallback {
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
 
 	private static AttackSpeedConfig speeds = new AttackSpeedConfig();
@@ -28,7 +33,7 @@ public final class AttackSpeeds
 	@Override
 	public void onEntityAdded(ServerWorld world, Entity entity) {
 		//Temporary workaround
-		if(speeds.itemAttackSpeeds == null) {
+		if (speeds.itemAttackSpeeds == null) {
 			try {
 				reload();
 			} catch(IOException ex) {
@@ -45,6 +50,7 @@ public final class AttackSpeeds
 		}
 	}
 
+	@SuppressWarnings("NullAway")
 	@Override
 	public void onPlayerTick(ServerPlayerEntity player) {
 		//Temporary workaround
@@ -69,6 +75,7 @@ public final class AttackSpeeds
 		attackSpeed.setBaseValue(speed == null ? speeds.defaultAttackSpeed : speed.speed);
 	}
 
+	@SuppressWarnings("NullAway")
 	@Override
 	public boolean onPlayerAttackEntity(ServerPlayerEntity player, Entity target) {
 		//Temporary workaround
@@ -105,8 +112,15 @@ public final class AttackSpeeds
 	public void onInitialize(ServerWorld world) {
 		try {
 			reload();
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			RandomConfigs.crashReport("Failed to load attack speeds", ex);
+		}
+	}
+
+	@Override
+	public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+		if (speeds.asreloadCommand) {
+			ASReloadCommand.register(dispatcher);
 		}
 	}
 
@@ -114,11 +128,12 @@ public final class AttackSpeeds
 		return speeds;
 	}
 
+	@SuppressWarnings("NullAway")
 	public static void reload() throws IOException {
-		if(Files.exists(JSON)) {
+		if (Files.exists(JSON)) {
 			speeds = RandomConfigs.readJson(JSON, AttackSpeedConfig.class);
 
-			if(firstReload) {
+			if (firstReload) {
 				firstReload = false;
 			} else {
 				speeds.ensureCorrect();
@@ -126,11 +141,5 @@ public final class AttackSpeeds
 		}
 
 		RandomConfigs.writeJson(JSON, speeds);
-	}
-
-	public static void registerCommand() {
-		if(speeds.asreloadCommand) {
-			CommandRegistry.INSTANCE.register(false, ASReloadCommand::register);
-		}
 	}
 }

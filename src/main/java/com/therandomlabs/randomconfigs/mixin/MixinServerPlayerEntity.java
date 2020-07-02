@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public class MixinServerPlayerEntity {
-	@Inject(method = "method_14226", at = @At("HEAD"))
+	@Inject(method = "tick", at = @At("HEAD"))
 	public void playerTick(CallbackInfo callback) {
 		PlayerTickCallback.EVENT.invoker().onPlayerTick((ServerPlayerEntity) (Object) this);
 	}

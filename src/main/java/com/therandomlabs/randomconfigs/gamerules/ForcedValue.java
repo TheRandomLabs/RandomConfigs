@@ -17,10 +17,10 @@ public final class ForcedValue {
 		protected void setFromArgument(CommandContext context, String argument) {}
 
 		@Override
-		public void setFromString(String value) {}
+		public void deserialize(String value) {}
 
 		@Override
-		public String valueToString() {
+		public String serialize() {
 			return Integer.toString(rule.get());
 		}
 
@@ -30,7 +30,7 @@ public final class ForcedValue {
 		}
 
 		@Override
-		protected GameRules.IntRule method_20770() {
+		protected GameRules.IntRule getThis() {
 			return this;
 		}
 	}
@@ -47,10 +47,10 @@ public final class ForcedValue {
 		protected void setFromArgument(CommandContext context, String argument) {}
 
 		@Override
-		public void setFromString(String value) {}
+		public void deserialize(String value) {}
 
 		@Override
-		public String valueToString() {
+		public String serialize() {
 			return Boolean.toString(rule.get());
 		}
 
@@ -60,7 +60,7 @@ public final class ForcedValue {
 		}
 
 		@Override
-		protected GameRules.BooleanRule method_20761() {
+		protected GameRules.BooleanRule getThis() {
 			return this;
 		}
 	}

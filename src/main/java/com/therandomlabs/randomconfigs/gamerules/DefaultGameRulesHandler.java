@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import com.therandomlabs.randomconfigs.api.IMixinRule;
 import com.therandomlabs.randomconfigs.api.event.world.CreateSpawnPositionCallback;
@@ -14,11 +15,14 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DefaultGameRulesHandler
 		implements WorldInitializeCallback, CreateSpawnPositionCallback {
+	@Nullable
 	private static List<DefaultGameRule> defaultGameRules;
 
+	@SuppressWarnings("NullAway")
 	@Override
 	public void onInitialize(ServerWorld world) {
 		defaultGameRules = DefaultGameRules.get(world);
@@ -42,20 +46,21 @@ public final class DefaultGameRulesHandler
 			((IMixinLevelProperties) properties).setGameRules(
 					new ForcedGameRules(gameRules, forced)
 			);
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
 		}
 	}
 
+	@SuppressWarnings("NullAway")
 	@Override
 	public void onCreateSpawnPosition(ServerWorld world) {
-		if(world.dimension.getType() != DimensionType.OVERWORLD) {
+		if (world.dimension.getType() != DimensionType.OVERWORLD) {
 			return;
 		}
 
 		final LevelProperties properties = world.getLevelProperties();
 
-		if(defaultGameRules == null) {
+		if (defaultGameRules == null) {
 			defaultGameRules = DefaultGameRules.get(world);
 		}
 

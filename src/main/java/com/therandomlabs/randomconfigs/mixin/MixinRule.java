@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+@SuppressWarnings("NullAway")
 @Mixin(GameRules.Rule.class)
 public class MixinRule implements IMixinRule {
 	@Shadow
@@ -19,9 +20,9 @@ public class MixinRule implements IMixinRule {
 
 	@Override
 	public void set(String string) {
-		setFromString(string);
+		deserialize(string);
 	}
 
 	@Shadow
-	protected void setFromString(String string) {}
+	protected void deserialize(String string) {}
 }
