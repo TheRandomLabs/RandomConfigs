@@ -2,9 +2,11 @@ package com.therandomlabs.randomconfigs.attackspeeds;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class AttackSpeedConfig {
 	public Map<String, ItemAttackSpeed> attackSpeeds = new HashMap<>();
@@ -13,16 +15,17 @@ public final class AttackSpeedConfig {
 	public boolean asreloadCommand = true;
 	public boolean enabled;
 
+	@Nullable
 	public transient Map<Item, ItemAttackSpeed> itemAttackSpeeds;
 
 	public void ensureCorrect() {
 		final Map<String, ItemAttackSpeed> newAttackSpeeds = new HashMap<>(attackSpeeds.size());
 		itemAttackSpeeds = new HashMap<>(attackSpeeds.size());
 
-		for(Map.Entry<String, ItemAttackSpeed> entry : attackSpeeds.entrySet()) {
+		for (Map.Entry<String, ItemAttackSpeed> entry : attackSpeeds.entrySet()) {
 			final Identifier identifier = new Identifier(entry.getKey());
 
-			if(!Registry.ITEM.containsId(identifier)) {
+			if (!Registry.ITEM.containsId(identifier)) {
 				continue;
 			}
 

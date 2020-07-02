@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
@@ -27,12 +28,14 @@ import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import com.therandomlabs.randomconfigs.gamerules.DefaultGameRulesHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class RandomConfigs implements ModInitializer {
 	public static final String MOD_ID = "randomconfigs";
@@ -83,8 +86,7 @@ public final class RandomConfigs implements ModInitializer {
 		PlayerTickCallback.EVENT.register(attackSpeeds);
 		PlayerAttackEntityCallback.EVENT.register(attackSpeeds);
 		WorldInitializeCallback.EVENT.register(attackSpeeds);
-
-		AttackSpeeds.registerCommand();
+		CommandRegistrationCallback.EVENT.register(attackSpeeds);
 	}
 
 	public static Path getFile(String file) {
@@ -113,6 +115,7 @@ public final class RandomConfigs implements ModInitializer {
 		return path;
 	}
 
+	@Nullable
 	public static String read(Path path) {
 		try {
 			return StringUtils.join(Files.readAllLines(path), System.lineSeparator());
@@ -129,6 +132,7 @@ public final class RandomConfigs implements ModInitializer {
 		return getConfig(jsonName + ".json");
 	}
 
+	@Nullable
 	public static JsonObject readJson(Path json) {
 		final String raw = read(json);
 
@@ -143,6 +147,8 @@ public final class RandomConfigs implements ModInitializer {
 		return null;
 	}
 
+	@SuppressWarnings("NullAway")
+	@Nullable
 	public static <T> T readJson(Path json, Class<T> clazz) {
 		String raw = read(json);
 

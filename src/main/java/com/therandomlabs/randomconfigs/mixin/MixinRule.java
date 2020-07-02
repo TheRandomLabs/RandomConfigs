@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+@SuppressWarnings("NullAway")
 @Mixin(GameRules.Rule.class)
 public class MixinRule implements IMixinRule {
 	@Shadow

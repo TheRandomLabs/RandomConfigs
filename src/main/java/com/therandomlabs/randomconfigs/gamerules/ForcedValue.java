@@ -30,7 +30,7 @@ public final class ForcedValue {
 		}
 
 		@Override
-		protected GameRules.IntRule method_20770() {
+		protected GameRules.IntRule getThis() {
 			return this;
 		}
 	}
@@ -60,7 +60,7 @@ public final class ForcedValue {
 		}
 
 		@Override
-		protected GameRules.BooleanRule method_20761() {
+		protected GameRules.BooleanRule getThis() {
 			return this;
 		}
 	}

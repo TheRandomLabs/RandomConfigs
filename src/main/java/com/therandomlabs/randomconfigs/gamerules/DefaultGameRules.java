@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DefaultGameRules {
 	public static final String MODE_OR_WORLD_TYPE_SPECIFIC = "MODE_OR_WORLD_TYPE_SPECIFIC";
@@ -36,14 +38,14 @@ public final class DefaultGameRules {
 	}
 
 	public static void ensureExists() throws IOException {
-		if(!exists()) {
+		if (!exists()) {
 			create();
 		}
 	}
 
-	@SuppressWarnings("Duplicates")
+	@SuppressWarnings({"Duplicates", "NullAway"})
 	public static List<DefaultGameRule> get(int gamemode, String worldType) throws IOException {
-		if(!exists()) {
+		if (!exists()) {
 			create();
 			return Collections.emptyList();
 		}
@@ -53,7 +55,7 @@ public final class DefaultGameRules {
 
 		final List<DefaultGameRule> gameRules = new ArrayList<>();
 
-		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
+		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();
 			final JsonElement value = entry.getValue();
 
@@ -75,7 +77,7 @@ public final class DefaultGameRules {
 
 			final DefaultGameRule gameRule = get(key, object);
 
-			if(gameRule != null) {
+			if (gameRule != null) {
 				gameRules.add(gameRule);
 			}
 		}
@@ -83,13 +85,14 @@ public final class DefaultGameRules {
 		return gameRules;
 	}
 
+	@Nullable
 	public static List<DefaultGameRule> get(World world) {
 		try {
 			return get(
 					world.getLevelProperties().getGameMode().getId(),
 					world.getGeneratorType().getName()
 			);
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			RandomConfigs.crashReport("Failed to read default gamerules", ex);
 		}
 
@@ -165,22 +168,23 @@ public final class DefaultGameRules {
 
 			final DefaultGameRule gameRule = get(key, (JsonObject) value);
 
-			if(gameRule != null) {
+			if (gameRule != null) {
 				gameRules.add(gameRule);
 			}
 		}
 	}
 
+	@Nullable
 	private static DefaultGameRule get(String key, JsonObject object) {
 		final JsonElement value = object.get("value");
 
-		if(!(value instanceof JsonPrimitive)) {
+		if (!(value instanceof JsonPrimitive)) {
 			return null;
 		}
 
 		final JsonElement forced = object.get("forced");
 
-		if(!(forced instanceof JsonPrimitive)) {
+		if (!(forced instanceof JsonPrimitive)) {
 			return null;
 		}
 

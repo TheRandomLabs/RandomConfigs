@@ -14,11 +14,14 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DefaultGameRulesHandler
 		implements WorldInitializeCallback, CreateSpawnPositionCallback {
+	@Nullable
 	private static List<DefaultGameRule> defaultGameRules;
 
+	@SuppressWarnings("NullAway")
 	@Override
 	public void onInitialize(ServerWorld world) {
 		defaultGameRules = DefaultGameRules.get(world);
@@ -47,6 +50,7 @@ public final class DefaultGameRulesHandler
 		}
 	}
 
+	@SuppressWarnings("NullAway")
 	@Override
 	public void onCreateSpawnPosition(ServerWorld world) {
 		if(world.dimension.getType() != DimensionType.OVERWORLD) {
