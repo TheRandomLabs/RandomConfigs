@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
-import blue.endless.jankson.impl.SyntaxError;
+import blue.endless.jankson.api.SyntaxError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.therandomlabs.randomconfigs.api.event.player.PlayerAttackEntityCallback;
