@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(GameRules.class)
 public interface IMixinGameRules {
 	@Accessor
-	Map<GameRules.RuleKey<?>, GameRules.Rule<?>> getRules();
+	Map<GameRules.Key<?>, GameRules.Rule<?>> getRules();
 
 	@Accessor
-	void setRules(Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules);
+	void setRules(Map<GameRules.Key<?>, GameRules.Rule<?>> rules);
 }

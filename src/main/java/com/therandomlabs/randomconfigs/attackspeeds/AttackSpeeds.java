@@ -43,7 +43,9 @@ public final class AttackSpeeds
 
 		if(entity instanceof PlayerEntity) {
 			final EntityAttributeInstance attackSpeed =
-					((PlayerEntity) entity).getAttributeInstance(EntityAttributes.ATTACK_SPEED);
+					((PlayerEntity) entity).getAttributeInstance(
+							EntityAttributes.GENERIC_ATTACK_SPEED
+					);
 
 			//If configurable attack speeds are disabled, set it to the vanilla default of 4.0
 			attackSpeed.setBaseValue(speeds.enabled ? speeds.defaultAttackSpeed : 4.0);
@@ -69,7 +71,7 @@ public final class AttackSpeeds
 		final Item item = player.getStackInHand(player.getActiveHand()).getItem();
 
 		final EntityAttributeInstance attackSpeed =
-				player.getAttributeInstance(EntityAttributes.ATTACK_SPEED);
+				player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED);
 
 		final ItemAttackSpeed speed = speeds.itemAttackSpeeds.get(item);
 		attackSpeed.setBaseValue(speed == null ? speeds.defaultAttackSpeed : speed.speed);

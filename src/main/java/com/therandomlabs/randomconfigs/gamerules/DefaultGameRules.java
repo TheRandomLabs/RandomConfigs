@@ -12,8 +12,13 @@ import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
+import com.therandomlabs.randomconfigs.mixin.IMixinUnmodifiableLevelProperties;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
+import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.UnmodifiableLevelProperties;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DefaultGameRules {
@@ -28,6 +33,19 @@ public final class DefaultGameRules {
 					"/data/randomconfigs/defaultgamerules.json"
 			)
 	);
+
+	@Nullable
+	public static List<DefaultGameRule> get(World world) {
+		try {
+			final String generator = ((ServerWorld) world).getServer().getSaveProperties().
+					getGeneratorOptions().isFlatWorld() ? "flat" : "default";
+			return get(getLevelProperties(world).getGameMode().getId(), generator);
+		} catch (Exception ex) {
+			RandomConfigs.crashReport("Failed to read default gamerules", ex);
+		}
+
+		return null;
+	}
 
 	public static void create() throws IOException {
 		Files.write(JSON, DEFAULT);
@@ -85,32 +103,26 @@ public final class DefaultGameRules {
 		return gameRules;
 	}
 
-	@Nullable
-	public static List<DefaultGameRule> get(World world) {
-		try {
-			return get(
-					world.getLevelProperties().getGameMode().getId(),
-					world.getGeneratorType().getName()
-			);
-		} catch (Exception ex) {
-			RandomConfigs.crashReport("Failed to read default gamerules", ex);
-		}
-
-		return null;
+	protected static LevelProperties getLevelProperties(World world) {
+		final WorldProperties properties = world.getLevelProperties();
+		return (LevelProperties) (properties instanceof UnmodifiableLevelProperties ?
+				((IMixinUnmodifiableLevelProperties) properties).getField_24179() : properties);
 	}
 
-	private static void getSpecific(List<DefaultGameRule> gameRules, JsonObject json, int gamemode,
-			String worldType) {
-		for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
+	private static void getSpecific(
+			List<DefaultGameRule> gameRules, JsonObject json, int gamemode,
+			String worldType
+	) {
+		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			final String key = entry.getKey();
 
-			if(!matches(key, gamemode, worldType)) {
+			if (!matches(key, gamemode, worldType)) {
 				continue;
 			}
 
 			final JsonElement value = entry.getValue();
 
-			if(!(value instanceof JsonObject)) {
+			if (!(value instanceof JsonObject)) {
 				continue;
 			}
 

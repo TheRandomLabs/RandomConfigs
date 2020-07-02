@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.Shadow;
 public class MixinRule implements IMixinRule {
 	@Shadow
 	@Final
-	private GameRules.RuleType type;
+	private GameRules.Type type;
 
 	@SuppressWarnings("unchecked")
-	public <T extends GameRules.Rule<T>> GameRules.RuleType<T> getType() {
+	public <T extends GameRules.Rule<T>> GameRules.Type<T> getType() {
 		return type;
 	}
 

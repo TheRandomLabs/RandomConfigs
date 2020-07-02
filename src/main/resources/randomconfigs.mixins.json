@@ -4,7 +4,10 @@
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
 		"IMixinGameRules",
+		"IMixinLevelInfo",
 		"IMixinLevelProperties",
+		"IMixinUnmodifiableLevelProperties",
+		"MixinMinecraftServer",
 		"MixinRule",
 		"MixinServerPlayerEntity",
 		"MixinServerWorld",
