@@ -97,7 +97,7 @@ public final class DefaultGameRules {
 	public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
 		final ServerWorld world = (ServerWorld) event.getWorld();
 
-		if (world.func_230315_m_() != DimensionType.field_236004_h_) {
+		if (world.func_230315_m_() != DimensionType.func_236019_a_()) {
 			return;
 		}
 
