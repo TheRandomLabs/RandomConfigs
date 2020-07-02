@@ -10,18 +10,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.storage.DerivedWorldInfo;
+import net.minecraft.world.storage.IWorldInfo;
+import net.minecraft.world.storage.ServerWorldInfo;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -50,7 +54,7 @@ public final class DefaultGameRules {
 			"\t\"MODE_OR_WORLD_TYPE_SPECIFIC\": {\n" +
 			"\t\t//Gamerules can be set for specific game modes and world types in the format:\n" +
 			"\t\t//MODE,MODE,...:TYPE,TYPE,...\n" +
-			"\t\t\"creative:flat,void\": {\n" +
+			"\t\t\"creative:flat\": {\n" +
 			"\t\t\t\"doDaylightCycle\": {\n" +
 			"\t\t\t\t\"value\": false,\n" +
 			"\t\t\t\t\"forced\": true\n" +
@@ -67,7 +71,8 @@ public final class DefaultGameRules {
 			"\t\t//The game mode or world type does not have to be specified.\n" +
 			"\t\t//For an empty game mode, use:\n" +
 			"\t\t//:TYPE,TYPE,...\n" +
-			"\t\t//For example, use \":void\" to specify gamerules for all Void worlds.\n" +
+			"\t\t//For example, use \":flat\" to specify gamerules for all flat worlds.\n" +
+			"\t\t//On 1.16, only the \"default\" and \"flat\" world types are supported.\n" +
 			"\t\t//The following specifies gamerules for all survival worlds.\n" +
 			"\t\t\"survival\": {\n" +
 			"\t\t\t//This isn't really a gamerule. RandomConfigs uses this to determine the " +
@@ -88,75 +93,88 @@ public final class DefaultGameRules {
 
 	private static List<DefaultGameRule> defaultGameRules;
 
-	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
 		final ServerWorld world = (ServerWorld) event.getWorld();
 
-		if(world.getDimension().getType() != DimensionType.OVERWORLD) {
+		if (world.func_230315_m_() != DimensionType.field_236004_h_) {
 			return;
 		}
 
 		defaultGameRules = get(world);
 
-		final WorldInfo worldInfo = world.getWorldInfo();
+		final ServerWorldInfo worldInfo = getWorldInfo(world);
 
-		for(DefaultGameRule rule : defaultGameRules) {
-			if(rule.key.equals(DIFFICULTY)) {
+		for (DefaultGameRule rule : defaultGameRules) {
+			if (rule.key.equals(DIFFICULTY)) {
 				try {
-					worldInfo.setDifficulty(
+					worldInfo.func_230409_a_(
 							Difficulty.valueOf(rule.value.toUpperCase(Locale.ENGLISH))
 					);
-					worldInfo.setDifficultyLocked(rule.forced);
-				} catch(IllegalArgumentException ex) {
+					worldInfo.func_230415_d_(rule.forced);
+				} catch (IllegalArgumentException ex) {
 					RandomConfigs.LOGGER.error("Invalid difficulty: {}", rule.value);
 				}
 
 				continue;
 			}
 
-			if(rule.key.equals(WORLD_BORDER_SIZE)) {
+			if (rule.key.equals(WORLD_BORDER_SIZE)) {
 				try {
 					world.getWorldBorder().setSize(Integer.parseInt(rule.value));
-				} catch(NumberFormatException ex) {
+				} catch (NumberFormatException ex) {
 					RandomConfigs.LOGGER.error("Invalid world border size: {}", rule.value);
 				}
 
 				continue;
 			}
 
-			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).setStringValue(rule.value);
+			setValue(worldInfo, rule);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
 		final IWorld world = event.getWorld();
 
-		if(world.isRemote()) {
+		if (world.isRemote()) {
 			return;
 		}
 
-		if(defaultGameRules == null) {
+		if (defaultGameRules == null) {
 			defaultGameRules = get(world);
 		}
 
-		final WorldInfo worldInfo = world.getWorldInfo();
+		final ServerWorldInfo worldInfo = getWorldInfo(world);
 		final Set<String> forced = new HashSet<>();
 
-		for(DefaultGameRule rule : defaultGameRules) {
-			if(!rule.forced || rule.key.equals(DefaultGameRules.DIFFICULTY) ||
+		for (DefaultGameRule rule : defaultGameRules) {
+			if (!rule.forced || rule.key.equals(DefaultGameRules.DIFFICULTY) ||
 					rule.key.equals(DefaultGameRules.WORLD_BORDER_SIZE)) {
 				continue;
 			}
 
 			forced.add(rule.key);
-			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).setStringValue(rule.value);
+			setValue(worldInfo, rule);
 		}
 
-		worldInfo.gameRules = new ForcedGameRules(worldInfo.gameRules, forced);
+		worldInfo.field_237342_b_.field_234945_f_ =
+				new ForcedGameRules(worldInfo.field_237342_b_.field_234945_f_, forced);
 		defaultGameRules = null;
+	}
+
+	private void setValue(ServerWorldInfo worldInfo, DefaultGameRule rule) {
+		final GameRules rules = worldInfo.getGameRulesInstance();
+		final Optional<GameRules.RuleKey<?>> optionalKey = rules.rules.keySet().stream().
+				filter(key -> rule.key.equals(key.getName())).
+				findFirst();
+		optionalKey.ifPresent(ruleKey -> rules.get(ruleKey).setStringValue(rule.value));
+	}
+
+	private static ServerWorldInfo getWorldInfo(IWorld world) {
+		final IWorldInfo info = world.getWorldInfo();
+		return (ServerWorldInfo) (info instanceof DerivedWorldInfo ?
+				((DerivedWorldInfo) info).delegate : info);
 	}
 
 	public static void create() throws IOException {
@@ -313,10 +331,9 @@ public final class DefaultGameRules {
 
 	private static List<DefaultGameRule> get(IWorld world) {
 		try {
-			return get(
-					world.getWorldInfo().getGameType().getID(),
-					world.getWorldInfo().getGenerator().getName()
-			);
+			final String generator = ((ServerWorld) world).getServer().func_240793_aU_().
+					func_230418_z_().func_236228_i_() ? "flat" : "default";
+			return get(getWorldInfo(world).getGameType().getID(), generator);
 		} catch(Exception ex) {
 			RandomConfigs.crashReport("Failed to read default gamerules", ex);
 		}

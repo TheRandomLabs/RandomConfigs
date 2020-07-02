@@ -3,10 +3,11 @@ package com.therandomlabs.randomconfigs.attackspeeds;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,12 +34,12 @@ public final class AttackSpeeds {
 
 		final Entity entity = event.getEntity();
 
-		if(!(entity instanceof PlayerEntity)) {
+		if (!(entity instanceof PlayerEntity)) {
 			return;
 		}
 
-		final IAttributeInstance attackSpeed =
-				((PlayerEntity) entity).getAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+		final ModifiableAttributeInstance attackSpeed =
+				((PlayerEntity) entity).getAttribute(Attributes.field_233825_h_);
 
 		//If configurable attack speeds are disabled, set it to the vanilla default of 4.0
 		//unless RandomTweaks is installed (see above if statement) since RandomTweaks
@@ -54,15 +55,15 @@ public final class AttackSpeeds {
 
 		final Entity entity = event.getEntity();
 
-		if(entity.getEntityWorld().isRemote || !(entity instanceof PlayerEntity)) {
+		if (entity.getEntityWorld().isRemote || !(entity instanceof PlayerEntity)) {
 			return;
 		}
 
 		final PlayerEntity player = (PlayerEntity) entity;
 		final ItemStack stack = player.getHeldItem(player.getActiveHand());
 
-		final IAttributeInstance attackSpeed =
-				player.getAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+		final ModifiableAttributeInstance attackSpeed =
+				player.getAttribute(Attributes.field_233825_h_);
 
 		final ItemAttackSpeed speed = speeds.itemAttackSpeeds.get(stack.getItem());
 		attackSpeed.setBaseValue(speed == null ? speeds.defaultAttackSpeed : speed.speed);
