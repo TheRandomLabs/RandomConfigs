@@ -16,12 +16,12 @@ public final class ForcedValue {
 		protected void func_223555_a(CommandContext context, String argument) {}
 
 		@Override
-		public void func_223553_a(String value) {}
-
-		@Override
 		public String func_223552_b() {
 			return Integer.toString(value.get());
 		}
+
+		@Override
+		public void func_223553_a(String value) {}
 
 		@Override
 		public int func_223557_c() {
@@ -46,12 +46,12 @@ public final class ForcedValue {
 		protected void func_223555_a(CommandContext context, String argument) {}
 
 		@Override
-		public void func_223553_a(String value) {}
-
-		@Override
 		public String func_223552_b() {
 			return Boolean.toString(value.get());
 		}
+
+		@Override
+		public void func_223553_a(String value) {}
 
 		@Override
 		public int func_223557_c() {
