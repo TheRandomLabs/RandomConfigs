@@ -125,7 +125,7 @@ public final class DefaultGameRules {
 				continue;
 			}
 
-			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).func_223553_a(rule.value);
+			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).setStringValue(rule.value);
 		}
 	}
 
@@ -152,7 +152,7 @@ public final class DefaultGameRules {
 			}
 
 			forced.add(rule.key);
-			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).func_223553_a(rule.value);
+			worldInfo.gameRules.get(new GameRules.RuleKey(rule.key)).setStringValue(rule.value);
 		}
 
 		worldInfo.gameRules = new ForcedGameRules(worldInfo.gameRules, forced);

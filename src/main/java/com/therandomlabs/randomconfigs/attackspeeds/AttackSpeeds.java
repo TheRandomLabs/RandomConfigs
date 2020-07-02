@@ -70,7 +70,7 @@ public final class AttackSpeeds {
 
 	@SubscribeEvent
 	public void onPlayerAttackEntity(AttackEntityEvent event) {
-		final PlayerEntity player = event.getEntityPlayer();
+		final PlayerEntity player = event.getPlayer();
 
 		if(player.getEntityWorld().isRemote || player.getCooledAttackStrength(0.5F) == 1.0F) {
 			return;
