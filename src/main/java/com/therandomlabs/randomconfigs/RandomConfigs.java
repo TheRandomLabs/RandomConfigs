@@ -22,6 +22,7 @@ import com.therandomlabs.randomconfigs.gamerules.DefaultGameRules;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ReportedException;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -63,7 +64,7 @@ public final class RandomConfigs {
 		}
 
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 		MinecraftForge.EVENT_BUS.register(new AttackSpeeds());
 		MinecraftForge.EVENT_BUS.register(new DefaultGameRules());
 	}
@@ -80,7 +81,7 @@ public final class RandomConfigs {
 		}
 	}
 
-	private void serverStarting(FMLServerStartingEvent event) {
+	private void registerCommands(RegisterCommandsEvent event) {
 		AttackSpeeds.registerCommand(event);
 	}
 

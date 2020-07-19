@@ -12,13 +12,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 public final class AttackSpeeds {
 	public static final Path JSON = RandomConfigs.getJson("attackspeeds");
@@ -107,14 +107,14 @@ public final class AttackSpeeds {
 	}
 
 	public static void registerClientCommand() {
-		if(speeds.asreloadclientCommand) {
+		if (speeds.asreloadclientCommand) {
 			//ClientCommandRegistry.instance.registerCommand(new ASReloadCommand(Side.CLIENT));
 		}
 	}
 
-	public static void registerCommand(FMLServerStartingEvent event) {
-		if(speeds.asreloadCommand) {
-			ASReloadCommand.register(event.getCommandDispatcher(), Dist.DEDICATED_SERVER);
+	public static void registerCommand(RegisterCommandsEvent event) {
+		if (speeds.asreloadCommand) {
+			ASReloadCommand.register(event.getDispatcher(), Dist.DEDICATED_SERVER);
 		}
 	}
 }
