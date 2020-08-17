@@ -18,10 +18,10 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.therandomlabs.randomconfigs.RandomConfigs;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DerivedWorldInfo;
 import net.minecraft.world.storage.IWorldInfo;
@@ -97,7 +97,8 @@ public final class DefaultGameRules {
 	public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
 		final ServerWorld world = (ServerWorld) event.getWorld();
 
-		if (world.func_230315_m_() != DimensionType.func_236019_a_()) {
+		if (world.func_230315_m_() !=
+				world.getServer().getWorld(World.field_234918_g_).func_230315_m_()) {
 			return;
 		}
 

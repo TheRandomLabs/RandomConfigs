@@ -2,14 +2,18 @@ package com.therandomlabs.randomconfigs.attackspeeds;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.mojang.serialization.Lifecycle;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraftforge.registries.GameData;
 
 public final class AttackSpeedConfig {
-	private static final SimpleRegistry<Item> ITEM_REGISTRY = GameData.getWrapper(Item.class);
+	private static final SimpleRegistry<Item> ITEM_REGISTRY =
+			GameData.getWrapper(Registry.field_239714_o_, Lifecycle.experimental());
 
 	public Map<String, ItemAttackSpeed> attackSpeeds = new HashMap<>();
 	public double defaultAttackSpeed = 4.0;
