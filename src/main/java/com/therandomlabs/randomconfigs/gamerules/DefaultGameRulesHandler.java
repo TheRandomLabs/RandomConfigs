@@ -16,7 +16,7 @@ import com.therandomlabs.randomconfigs.mixin.IMixinLevelProperties;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -47,7 +47,7 @@ public final class DefaultGameRulesHandler
 				setDefaultGameRule(properties, rule);
 			}
 
-			final LevelInfo info = ((IMixinLevelProperties) properties).getField_25030();
+			final LevelInfo info = ((IMixinLevelProperties) properties).getLevelInfo();
 			((IMixinLevelInfo) (Object) info).setGameRules(new ForcedGameRules(gameRules, forced));
 		} catch (Exception ex) {
 			RandomConfigs.crashReport("Failed to set GameRules instance", ex);
@@ -57,7 +57,7 @@ public final class DefaultGameRulesHandler
 	@SuppressWarnings("NullAway")
 	@Override
 	public void onCreateSpawnPosition(ServerWorld world) {
-		if (world.getDimension() != DimensionType.getOverworldDimensionType()) {
+		if (world.getDimension() != world.getServer().getWorld(World.OVERWORLD).getDimension()) {
 			return;
 		}
 

@@ -1,4 +1,4 @@
-version = "1.16.1-1.4.2.0-fabric"
+version = "1.16.2-1.4.2.2-fabric"
 group = "com.therandomlabs.randomconfigs"
 
 ext.trlutilsFabric = false
